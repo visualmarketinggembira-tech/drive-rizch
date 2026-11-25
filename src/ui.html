@@ -1,0 +1,2681 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f8fc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1322" media="(prefers-color-scheme: dark)">
+<title>Drive Gabungan</title>
+<link rel="icon" href="https://outsiderdev.com/img/ico.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Drive Gabungan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f8fc; --surface:#ffffff; --sunk:#eef2f8; --ink:#16213a; --ink2:#5b6782; --ink3:#8a94aa;
+  --line:#e2e7f0; --pri:#2f6bff; --pri-ink:#fff; --pri-soft:#e6eeff; --danger:#d93636; --ok:#17a36b;
+  --r-lg:20px; --r:12px; --r-sm:8px;
+  --shadow:0 1px 2px rgba(22,33,58,.06),0 8px 24px -12px rgba(22,33,58,.18);
+  --shadow-pop:0 18px 50px -12px rgba(22,33,58,.35);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --sb:#c3cbdb; --sb-h:#9aa5bd;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0d1322; --surface:#151d31; --sunk:#1b2540; --ink:#e8ecf6; --ink2:#a3adc4; --ink3:#6f7a94;
+  --line:#25304d; --pri:#5b8cff; --pri-soft:#1f2c50; --danger:#ff6b6b; --ok:#38d39a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-pop:0 18px 50px -12px rgba(0,0,0,.7);
+  --sb:#2f3b5c; --sb-h:#45537a;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1322; --surface:#151d31; --sunk:#1b2540; --ink:#e8ecf6; --ink2:#a3adc4; --ink3:#6f7a94;
+  --line:#25304d; --pri:#5b8cff; --pri-soft:#1f2c50; --danger:#ff6b6b; --ok:#38d39a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-pop:0 18px 50px -12px rgba(0,0,0,.7);
+  --sb:#2f3b5c; --sb-h:#45537a;
+  color-scheme:dark;
+}}
+/* Scrollbar ikut tema (sidebar, halaman, dialog, panel) */
+*{scrollbar-width:thin;scrollbar-color:var(--sb) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--sb-h);background-clip:padding-box;border:2px solid transparent}
+::-webkit-scrollbar-corner{background:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:6px}
+.hidden{display:none!important}
+svg.i{width:20px;height:20px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;font-weight:600;font-size:14px;transition:background .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--pri);color:var(--pri-ink)}
+.btn.pri:hover{filter:brightness(1.07)}
+.btn.ghost{background:var(--surface);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.5;pointer-events:none}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:inline-grid;place-items:center;color:var(--ink2);transition:background .15s}
+.icon-btn:hover,.icon-btn.on{background:var(--sunk);color:var(--ink)}
+.field{width:100%;height:46px;border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r);padding:0 14px;outline:none;transition:border-color .15s}
+.field:focus{border-color:var(--pri)}
+.muted{color:var(--ink2)}
+.small{font-size:12.5px}
+
+/* ===== Auth ===== */
+.auth{min-height:100%;display:grid;place-items:center;padding:24px 16px}
+.auth-card{width:100%;max-width:380px}
+.auth-mark{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.auth-mark .logo{width:44px;height:44px;border-radius:14px;background:var(--pri);display:grid;place-items:center;color:#fff}
+.auth h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 6px}
+.auth p{margin:0 0 22px;color:var(--ink2)}
+.auth form{display:flex;flex-direction:column;gap:10px}
+.auth .btn{height:46px;justify-content:center;margin-top:6px}
+.err{color:var(--danger);font-size:13px;min-height:18px}
+.strip-demo{display:flex;height:10px;border-radius:99px;overflow:hidden;gap:3px;margin-bottom:26px}
+.strip-demo i{flex:1;border-radius:99px}
+
+/* ===== Shell ===== */
+.shell{display:grid;grid-template-columns:288px 1fr;min-height:100%}
+aside{position:sticky;top:0;height:100vh;height:100dvh;padding:20px 16px;display:flex;flex-direction:column;gap:18px;border-right:1px solid var(--line);background:var(--surface);overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px;font-weight:800;font-size:17px;letter-spacing:-.01em}
+.brand .logo{width:34px;height:34px;border-radius:11px;background:var(--pri);display:grid;place-items:center;color:#fff}
+.brand .logo svg{width:18px;height:18px}
+
+/* the signature element: combined storage strip */
+.store{padding:16px;border-radius:var(--r-lg);background:var(--sunk)}
+.store-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}
+.store-num{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.store-num small{font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:0;margin-left:4px}
+.strip{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--line);gap:2px}
+.strip span{display:block;height:100%;transition:flex-grow .6s var(--ease)}
+.strip span.free{background:transparent}
+.store-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+
+.acc-list{display:flex;flex-direction:column;gap:2px}
+.acc{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r);cursor:pointer;transition:background .15s;position:relative}
+.acc:hover{background:var(--sunk)}
+.acc.on{background:var(--pri-soft)}
+.acc .sw{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+.acc .meta{flex:1;min-width:0}
+.acc .em{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc .mini{height:4px;border-radius:9px;background:var(--line);margin-top:6px;overflow:hidden}
+.acc .mini i{display:block;height:100%;border-radius:9px}
+.acc .sub{font-size:12px;color:var(--ink2);margin-top:3px}
+.acc .rm{opacity:.45;width:28px;height:28px}
+.acc:hover .rm,.acc:focus-within .rm{opacity:1}
+.acc.err .sub{color:var(--danger)}
+.add-acc{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r);border:1.5px dashed var(--line);color:var(--ink2);font-weight:600;font-size:13.5px;transition:border-color .15s,color .15s}
+.add-acc:hover{border-color:var(--pri);color:var(--pri)}
+.side-foot{margin-top:auto;display:flex;gap:4px;align-items:center}
+.side-foot .btn{flex:1;justify-content:center;height:38px;font-size:13px}
+
+/* ===== Main ===== */
+main{min-width:0;display:flex;flex-direction:column;min-height:100vh}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;padding:14px 28px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px)}
+#menuBtn,#moreBtn{display:none}
+.search{position:relative;flex:1;min-width:0}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ink3)}
+.search input{width:100%;height:48px;border-radius:999px;border:1.5px solid transparent;background:var(--surface);box-shadow:var(--shadow);padding:0 46px 0 48px;outline:none;transition:border-color .15s}
+.search input:focus{border-color:var(--pri)}
+.search .x{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px}
+.search kbd{position:absolute;right:16px;top:50%;transform:translateY(-50%);font:600 11px/1 inherit;color:var(--ink3);border:1px solid var(--line);border-radius:6px;padding:4px 7px}
+
+.content{padding:4px 28px 28px;flex:1;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 18px}
+.crumbs{flex:1;min-width:0;display:flex;align-items:center;gap:2px;flex-wrap:wrap;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.crumbs button{padding:4px 8px;border-radius:8px;color:var(--ink2);font-weight:700}
+.crumbs button:hover{background:var(--sunk);color:var(--ink)}
+.crumbs button:last-child{color:var(--ink)}
+.crumbs .sep{color:var(--ink3);font-weight:400}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.chip:hover{color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg{display:inline-flex;background:var(--sunk);border-radius:999px;padding:3px}
+.seg button{width:36px;height:34px;border-radius:999px;display:grid;place-items:center;color:var(--ink3)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.sort{height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);padding:0 12px;font-size:13px;font-weight:600}
+
+.notice{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,#f5a524 14%,var(--surface));border:1px solid color-mix(in srgb,#f5a524 40%,transparent);padding:10px 14px;border-radius:var(--r);margin-bottom:12px;font-size:13px}
+
+/* grid */
+.files.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.files.grid .it{background:var(--surface);border-radius:16px;overflow:hidden;cursor:pointer;position:relative;border:1px solid var(--line);transition:border-color .15s,box-shadow .2s,transform .2s var(--ease)}
+.files.grid .it:hover{border-color:color-mix(in srgb,var(--pri) 45%,var(--line));box-shadow:var(--shadow);transform:translateY(-2px)}
+.files.grid .th{aspect-ratio:4/3;display:grid;place-items:center;background:var(--sunk);position:relative;overflow:hidden}
+.files.grid .th img{width:100%;height:100%;object-fit:cover}
+.files.grid .th .ft{width:52px;height:52px}
+.files.grid .tag{position:absolute;left:10px;bottom:10px;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 3px var(--surface)}
+.files.grid .nm{padding:10px 12px 2px;font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files.grid .sz{padding:0 12px 12px;font-size:12px;color:var(--ink2)}
+.files.grid .more{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(6px);opacity:0;transition:opacity .15s}
+.files.grid .it:hover .more,.files.grid .more:focus-visible{opacity:1}
+.files.grid .it.folder .th{aspect-ratio:auto;height:64px;justify-content:start;padding:0 14px;grid-template-columns:auto 1fr;gap:10px}
+.files.grid .it.folder .nm{position:absolute;left:58px;right:40px;top:50%;transform:translateY(-50%);padding:0}
+.files.grid .it.folder .sz{display:none}
+.files.grid .it.folder .nm small{display:block;font-size:11.5px;font-weight:500;color:var(--ink2);margin-top:1px}
+.files.grid .sz{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.files.list .dt{white-space:nowrap}
+.own{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink2)}
+.files.grid .it.folder .th .ft{width:28px;height:28px}
+.files.grid .it.folder .tag{left:auto;right:auto;bottom:auto;position:static;margin-left:-6px}
+.files.grid .it.folder .more{top:50%;transform:translateY(-50%)}
+.group-label{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--ink2);margin:6px 2px -4px}
+
+/* list */
+.files.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.files.list .group-label{display:none}
+.acc-label{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;margin:14px 2px 2px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.acc-label:first-child{margin-top:0}
+.acc-label .sw{width:12px;height:12px;border-radius:4px}
+.acc-label span:last-child{margin-left:auto;font-weight:600;font-size:12.5px;color:var(--ink2)}
+.files.list .acc-label{margin:0;padding:12px 14px;background:var(--sunk);border-bottom:0}
+.ck{position:absolute;top:8px;left:8px;z-index:2;width:26px;height:26px;border-radius:8px;border:2px solid #fff;background:rgba(10,15,30,.35);color:transparent;display:grid;place-items:center;opacity:0;transition:opacity .15s,background .15s}
+.it:hover .ck,.selecting .ck,.ck:focus-visible{opacity:1}
+.it.sel .ck{background:var(--pri);border-color:var(--pri);color:#fff;opacity:1}
+.it.sel{outline:2px solid var(--pri);outline-offset:-2px}
+.files.list .ck{position:static;opacity:1;border-color:var(--line);background:var(--surface);margin-right:-4px}
+.files.list .it{grid-template-columns:26px 40px 1fr 110px 120px 40px}
+.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:33;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);padding:8px 10px 8px 8px;border-radius:999px;box-shadow:var(--shadow-pop);animation:rise .2s var(--ease);max-width:calc(100vw - 20px)}
+.selbar b{padding:0 6px;white-space:nowrap;font-size:14px}
+.selbar .icon-btn{color:var(--bg)}
+.selbar .icon-btn:hover{background:rgba(255,255,255,.12)}
+.selbar .btn{height:36px;background:transparent;border-color:rgba(255,255,255,.25);color:var(--bg)}
+.selbar .btn:hover{background:rgba(255,255,255,.12)}
+.selbar .btn.danger{color:#ff8a8a}
+.sh-sec{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.sh-sec:first-child{border-top:0;padding-top:0}
+.sh-sec>b{font-size:13.5px}
+.sh-sec .btn{align-self:flex-start;height:36px;font-size:13px}
+.sh-row{display:flex;gap:6px}
+.field.sm{height:40px;font-size:13.5px;padding:0 10px}
+.field.role{width:130px;flex-shrink:0}
+.sh-ck{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2)}
+.sh-ck input{accent-color:var(--pri)}
+.sh-list{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto}
+.sh-p{display:flex;align-items:center;gap:10px}
+.sh-p .av{width:32px;height:32px;border-radius:10px;color:#fff;font-weight:800;display:grid;place-items:center;flex-shrink:0;font-size:13px}
+.sh-p .n{flex:1;min-width:0}
+.sh-p .n b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-p .n span{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.sh-p .r{font-size:12.5px;color:var(--ink2)}
+.dialog.wide{max-width:540px}
+.ai.ok{color:var(--ok)}.ai.bad{color:var(--danger);background:color-mix(in srgb,var(--danger) 12%,var(--sunk))}
+.lg-r .n b{font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lg-r .n span{font-size:12px;color:var(--ink2)}
+.pill{font-size:10.5px;font-weight:800;color:#b45309;background:#fef3c7;border-radius:99px;padding:1px 7px}
+.lg-sum{display:flex;gap:8px;margin-bottom:10px}
+.lg-sum span{flex:1;background:var(--sunk);border-radius:12px;padding:10px;text-align:center;font-size:12.5px;color:var(--ink2)}
+.lg-sum b{display:block;font-size:20px;color:var(--ink)}
+.lg-sum .bad b{color:var(--danger)}
+.newtag{display:inline-flex;align-items:center;margin-left:8px;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(90deg,#2f6bff,#17a36b);border-radius:99px;padding:2px 7px;vertical-align:middle}
+.menu .newtag{margin-left:auto}
+.nav button .newtag{margin-left:auto}
+.chip .newtag{margin-left:6px}
+.newdot{position:absolute;top:8px;left:8px;width:8px;height:8px;border-radius:50%;background:#17a36b;box-shadow:0 0 0 2px var(--bg)}
+.infobox{display:flex;gap:10px;align-items:flex-start;background:var(--pri-soft);border-radius:12px;padding:12px;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.infobox svg{color:var(--pri);width:18px;height:18px;flex-shrink:0;margin-top:1px}
+.infobox b:first-child{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.hangus{color:var(--danger)}
+.qk{display:flex;gap:6px;flex-wrap:wrap;margin-top:-2px}
+.qk .chip{height:30px;font-size:12px}
+.bell{position:relative}
+.badge{position:absolute;top:4px;right:4px;min-width:17px;height:17px;border-radius:99px;background:var(--danger);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 0 2px var(--bg)}
+.bellm{width:340px;max-width:calc(100vw - 16px)}
+.bellm.sheet{width:auto;max-width:none}
+#busy{position:fixed;left:0;right:0;top:0;height:3px;z-index:200;overflow:hidden;opacity:0;background:color-mix(in srgb,var(--pri) 22%,transparent);transition:opacity .2s;pointer-events:none}
+#busy.on{opacity:1}
+#busy::before{content:"";position:absolute;top:0;bottom:0;left:0;width:35%;border-radius:3px;background:linear-gradient(90deg,transparent,var(--pri),#38d39a,transparent);animation:busyrun 1.1s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes busyrun{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+body.is-busy{cursor:progress}
+body.is-busy .top .search svg.i{animation:busypulse 1s ease-in-out infinite}
+@keyframes busypulse{50%{opacity:.35}}
+.btn.loading{pointer-events:none;opacity:.85}
+.btn.loading::before{content:"";width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#busy::before{animation:none;width:100%;opacity:.6}.btn.loading::before{animation:none}}
+.bellm .allupd{font-size:12.5px;font-weight:700;color:var(--pri);padding:6px 10px 10px;text-align:left}
+.chg{display:grid;gap:14px;max-height:60vh;overflow:auto}
+.chg-i b{display:block;font-size:15px}
+.chg-i small{color:var(--ink3);font-size:12px}
+.chg-i ul{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:13.5px;display:grid;gap:3px}
+.bl{max-height:360px;overflow:auto}
+.br{display:flex;gap:10px;padding:10px;border-radius:10px}
+.br.new{background:var(--pri-soft)}
+.br .n{min-width:0}.br .n b{display:block;font-size:13.5px}.br .n span{display:block;font-size:12.5px;color:var(--ink2)}.br .n small{font-size:11.5px;color:var(--ink3)}
+.sfilt{display:flex;gap:6px;flex-wrap:wrap;margin:-6px 0 14px}
+.sfilt .sort{height:34px;font-size:12.5px}
+.pins{display:flex;flex-direction:column;gap:2px}
+.acc.pin .ft{flex-shrink:0}
+.lk-l{display:flex;flex-direction:column;gap:4px}
+.lk{display:flex;align-items:center;gap:6px;padding:10px;border:1px solid var(--line);border-radius:12px}
+.lk.off{opacity:.55}
+.lk .n{flex:1;min-width:0}
+.lk .n b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk .n span{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.bk{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.bk-h{display:flex;align-items:center;gap:8px}.bk-h svg{color:var(--pri);width:18px;height:18px}
+.bk-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.bk-r svg.i{width:14px;height:14px}
+.bk-a{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bk-a .field.sm{width:auto;flex:1;min-width:150px}
+.bk-a .btn{height:40px;font-size:13px}
+.seg2.three{grid-template-columns:1fr}
+.avt{border-radius:50%;object-fit:cover;flex-shrink:0;display:inline-grid;place-items:center;color:#fff;font-weight:800;line-height:1}
+.files .th .tag{background:none!important;box-shadow:none!important;width:auto!important;height:auto!important;display:inline-flex}
+.files.grid .th .tag{left:8px;bottom:8px}
+.files.grid .it.folder .th .tag{position:absolute;left:30px;top:50%;margin:6px 0 0;bottom:auto}
+.files.grid .it.folder .star{right:46px;top:8px;transform:none}
+.files.grid .it.folder .star svg{width:11px;height:11px}
+.files.grid .it.folder .nm{right:40px}
+.files.list .th .tag{right:-4px;bottom:-4px}
+.rows .th .tag{display:none}
+.dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.72);color:#fff;font-size:11.5px;font-weight:700;padding:2px 6px;border-radius:6px}
+.files.list .dur{display:none}
+.files.gallery{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
+.files.gallery .it{border-radius:6px;border:0}
+.files.gallery .th{aspect-ratio:1}
+.files.gallery .nm,.files.gallery .sz{position:absolute;left:0;right:0;color:#fff;opacity:0;transition:opacity .15s;pointer-events:none}
+.files.gallery .nm{bottom:16px;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:18px 10px 0}
+.files.gallery .sz{bottom:0;background:rgba(0,0,0,.6);padding:0 10px 6px;color:#ddd}
+.files.gallery .it:hover .nm,.files.gallery .it:hover .sz{opacity:1}
+.files.gallery .group-label{display:none}
+.drop-on{outline:2.5px dashed var(--pri)!important;outline-offset:-2px;background:var(--pri-soft)!important}
+body.dragging #side .acc[data-id]:not([data-id="all"]){outline:1.5px dashed var(--line)}
+.toast{display:flex;align-items:center;gap:14px}
+.toast button{color:var(--pri);font-weight:800;background:none;filter:brightness(1.5)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:360px;max-width:100vw;z-index:38;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-pop);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s var(--ease)}
+.drawer.on{transform:none}
+.drawer.hidden{display:flex!important;transform:translateX(102%);visibility:hidden}
+.dr-h{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px 20px;border-bottom:1px solid var(--line)}
+.dr-b{flex:1;overflow:auto;padding:18px 20px 30px}
+.dr-th{height:170px;border-radius:16px;background:var(--sunk);display:grid;place-items:center;overflow:hidden;margin-bottom:14px}
+.dr-th img{width:100%;height:100%;object-fit:contain}
+.dr-th .ft{width:64px;height:64px}
+.dr-n{margin:0 0 8px;font-size:17px;word-break:break-word}
+.dr-acc{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin-bottom:14px}
+.dr-acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.dr-acts .btn{height:36px;font-size:13px}
+.dr-sec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.dr-sec h4{margin:0 0 10px;font-size:13.5px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:13px;padding:5px 0}
+.kv span{color:var(--ink2);display:flex;align-items:center}
+.kv b{font-weight:600;word-break:break-word}
+.kv svg.i{width:16px;height:16px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg2 label{border:1.5px solid var(--line);border-radius:var(--r);padding:10px 12px;cursor:pointer;font-weight:700;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.seg2 label:has(input:checked){border-color:var(--pri);background:var(--pri-soft)}
+.seg2 input{accent-color:var(--pri);position:absolute;opacity:0}
+.seg2 small{font-weight:500;font-size:12px;color:var(--ink2)}
+.c-tips{grid-column:span 7}.c-act{grid-column:span 5}
+.tips{display:flex;flex-direction:column;gap:8px}
+.tip-i{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:var(--sunk)}
+.tip-i>svg{width:22px;height:22px;color:var(--pri);flex-shrink:0}
+.tip-i.warn>svg{color:#f5a524}.tip-i.ok>svg{color:var(--ok)}
+.tip-i div{flex:1;min-width:0}
+.tip-i b{display:block;font-size:13.5px}
+.tip-i span{font-size:12.5px;color:var(--ink2)}
+.tip-i .btn{height:34px;font-size:12.5px;flex-shrink:0}
+.act-l{display:flex;flex-direction:column;gap:2px;max-height:330px;overflow:auto}
+.act-r,.sh-p{display:flex;align-items:center;gap:10px;padding:6px 0}
+.ai{width:32px;height:32px;border-radius:10px;background:var(--sunk);display:grid;place-items:center;flex-shrink:0;color:var(--ink2)}
+.ai svg{width:16px;height:16px}
+.act-r .n{min-width:0;flex:1}
+.act-r .n b{display:block;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-r .n span{font-size:12px;color:var(--ink2)}
+.sh-sec>b{display:flex;align-items:center;gap:8px}
+.sh-sec>b svg{width:18px;height:18px;color:var(--pri)}
+.sh-sec p{margin:-4px 0 2px}
+.rv{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;margin:0 -6px}
+.rv-g{font-size:12.5px;font-weight:700;color:var(--ink2);padding:10px 8px 4px}
+.rv-r{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer}
+.rv-r:hover{background:var(--sunk)}
+.rv-r input{accent-color:var(--danger);width:16px;height:16px}
+.rv-r .n{flex:1;min-width:0}
+.rv-r .n b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-r .n span{font-size:12px;color:var(--ink2)}
+.kbl{display:flex;flex-direction:column}
+.kbl div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.kbl div:last-child{border:0}
+kbd{font:700 12px/1 inherit;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:3px 7px;background:var(--sunk)}
+#pkBtn{height:46px;justify-content:center}
+@media (max-width:1100px){.c-tips,.c-act{grid-column:1/-1}}
+.dialog .desc,.dialog h3{overflow-wrap:anywhere}
+.dialog{max-height:calc(100dvh - 32px);overflow-y:auto;overflow-x:hidden;z-index:1;animation:dlg .18s var(--ease)}
+.modal>.scrim{z-index:0}
+@keyframes dlg{from{opacity:0;transform:translateY(10px)}}
+body:has(.selbar) .fab{display:none!important}
+.files.list .it{display:grid;grid-template-columns:26px 40px minmax(0,1fr) 110px 120px 40px;align-items:center;gap:12px;padding:8px 12px;border-top:1px solid var(--line);cursor:pointer;position:relative;transition:background .12s}
+.files.list .it:first-of-type{border-top:0}
+.files.list .it:hover{background:var(--sunk)}
+.files.list .th{width:40px;height:40px;border-radius:10px;background:var(--sunk);display:grid;place-items:center;overflow:hidden;position:relative}
+.files.list .th img{width:100%;height:100%;object-fit:cover}
+.files.list .th .ft{width:24px;height:24px}
+.files.list .tag{position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px var(--surface)}
+.files.list .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files.list .sz,.files.list .dt{font-size:12.5px;color:var(--ink2)}
+.files.list .more{width:36px;height:36px;border-radius:10px}
+
+.sk{background:linear-gradient(90deg,var(--sunk),var(--line),var(--sunk));background-size:200% 100%;animation:sk 1.2s infinite;border-radius:16px}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}*{transition:none!important}}
+
+.empty{flex:1;display:grid;place-items:center;text-align:center;padding:48px 16px}
+.empty .art{width:84px;height:84px;border-radius:26px;background:var(--pri-soft);color:var(--pri);display:grid;place-items:center;margin:0 auto 16px}
+.empty .art svg{width:40px;height:40px}
+.empty h3{margin:0 0 6px;font-size:18px}
+.empty p{margin:0 0 18px;color:var(--ink2)}
+
+.fab{display:none}
+.install{position:fixed;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top));z-index:35;width:min(440px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-pop);padding:14px;display:flex;gap:12px;align-items:center;animation:rise .25s var(--ease)}
+.install img{width:48px;height:48px;border-radius:12px;flex-shrink:0}
+.install .tx{flex:1;min-width:0}
+.install .tx b{display:block;font-size:14.5px}
+.install .tx span{font-size:12.5px;color:var(--ink2)}
+.install .ac{display:flex;flex-direction:column;gap:6px}
+.install .btn{height:34px;padding:0 14px;font-size:13px;justify-content:center}
+.ios-steps{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.ios-steps div{display:flex;gap:10px;align-items:center}
+.ios-steps b{width:26px;height:26px;border-radius:9px;background:var(--pri-soft);color:var(--pri);display:grid;place-items:center;flex-shrink:0;font-size:13px}
+#installSide{justify-content:flex-start}
+
+/* nav */
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);font-weight:600;font-size:14px;color:var(--ink2);text-align:left}
+.nav button:hover{background:var(--sunk);color:var(--ink)}
+.nav button.on{background:var(--pri-soft);color:var(--pri)}
+.side-h{font-size:12.5px;font-weight:700;color:var(--ink3);padding:0 10px;margin-bottom:-10px}
+
+/* dashboard */
+.dash{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;padding-bottom:8px}
+.dash-head{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:8px 0 2px}
+.dash-head h2{margin:0;font-size:26px;letter-spacing:-.03em}
+.dash-head p{margin:2px 0 0;color:var(--ink2);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;min-width:0}
+.card h3{margin:0 0 4px;font-size:15.5px;letter-spacing:-.01em}
+.card .sub{color:var(--ink2);font-size:13px;margin:0 0 14px}
+.kpi{grid-column:span 3;display:flex;flex-direction:column;gap:6px}
+.kpi .k{font-size:13px;color:var(--ink2);font-weight:600}
+.kpi .v{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.kpi .v small{font-size:14px;font-weight:600;color:var(--ink2);margin-left:3px;letter-spacing:0}
+.kpi .h{font-size:12.5px;color:var(--ink3)}
+.kpi.lead{background:var(--pri);border-color:var(--pri);color:#fff}
+.kpi.lead .k,.kpi.lead .h,.kpi.lead .v small{color:rgba(255,255,255,.8)}
+.kpi .act{margin-top:auto;align-self:flex-start;font-size:12.5px;font-weight:700;color:var(--pri)}
+.c-donut{grid-column:span 5}
+.c-break{grid-column:span 7}
+.c-list{grid-column:span 6}
+.c-acc{grid-column:1/-1}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut{position:relative;width:190px;height:190px;flex-shrink:0}
+.donut svg{width:100%;height:100%;overflow:visible}
+.donut .pl{font:800 11px "Plus Jakarta Sans",sans-serif;fill:#fff;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.25);stroke-width:2px}
+.donut circle{fill:none;stroke-width:22;transition:stroke-width .2s,opacity .2s;cursor:pointer}
+.donut circle.dim{opacity:.25}
+.donut circle.hi{stroke-width:28}
+.donut .mid{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
+.donut .mid b{display:block;font-size:22px;letter-spacing:-.03em}
+.donut .mid span{font-size:12px;color:var(--ink2);max-width:120px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}
+.legend button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;text-align:left;font-size:13px}
+.legend button:hover,.legend button.hi{background:var(--sunk)}
+.legend .sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend button{align-items:flex-start}
+.legend .lg{flex:1;min-width:0}
+.legend .lt{display:flex;justify-content:space-between;gap:8px}
+.legend .lb{height:6px;border-radius:9px;background:var(--sunk);margin:6px 0 4px;overflow:hidden}
+.legend .lb i{display:block;height:100%;border-radius:9px}
+.legend .ls{font-size:12px;color:var(--ink2)}
+.legend .l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.legend .r{color:var(--ink2);font-variant-numeric:tabular-nums}
+.brk{display:flex;flex-direction:column;gap:16px}
+.brk .row .t{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:6px}
+.brk .row .t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brk .row .t span{color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.brk .bar2{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--sunk);gap:2px}
+.brk .bar2 i{display:block;height:100%;transition:flex-grow .6s var(--ease)}
+.brk .bar2 i.dot{flex:none;width:12px;border-radius:99px}
+.brk .bd{font-size:12px;color:var(--ink3);margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.brk .bd span{display:inline-flex;align-items:center;gap:5px}
+.brk .bd i{width:8px;height:8px;border-radius:50%;display:inline-block}
+:root{--c-drive:#4f86ff;--c-mail:#f5a524;--c-trash:#ef5a5a}
+.brk-key{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:16px}
+.brk-key span{display:inline-flex;align-items:center;gap:6px}
+.brk-key i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.rows{display:flex;flex-direction:column}
+.rows .r{display:grid;grid-template-columns:38px 1fr auto;gap:12px;align-items:center;padding:8px;border-radius:12px;cursor:pointer;text-align:left;width:100%}
+.rows .r:hover{background:var(--sunk)}
+.rows .rw{display:flex;align-items:center;gap:2px}
+.more-sent{text-align:center;color:var(--ink3);font-size:13px;padding:18px 0}
+.bigchips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.bigchips::-webkit-scrollbar{display:none}
+.bigchips .chip{flex:none;display:inline-flex;align-items:center;gap:6px}
+.bigchips .sw{width:9px;height:9px;border-radius:50%}
+.bigmanage{margin-top:10px;width:100%;justify-content:center}
+.rows .rw .r{flex:1;min-width:0}
+.rows .loc{flex:none;color:var(--ink2)}
+.rows .loc:hover{color:var(--pri)}
+.it.flash{animation:flash 2.2s var(--ease)}
+.files .it.found{outline:3px solid var(--pri);outline-offset:-1px;background:color-mix(in srgb,var(--pri) 8%,var(--surface))}
+@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--pri);border-color:var(--pri)}100%{box-shadow:0 0 0 0 transparent}}
+.rows .th{width:38px;height:38px;border-radius:10px;background:var(--sunk);display:grid;place-items:center;overflow:hidden;position:relative}
+.rows .th img{width:100%;height:100%;object-fit:cover}
+.rows .th .ft{width:22px;height:22px}
+.rows .th .tag{position:absolute;right:2px;bottom:2px;width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 2px var(--surface)}
+.rows .n{min-width:0}
+.rows .n b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rows .n span{font-size:12px;color:var(--ink2)}
+.rows .m{font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums;text-align:right}
+.rows .bigbar{height:4px;border-radius:9px;background:var(--sunk);margin-top:5px;overflow:hidden}
+.rows .bigbar i{display:block;height:100%;border-radius:9px}
+.acct{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.acct .a{border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.acct .a .top2{display:flex;align-items:center;gap:10px;min-width:0}
+.acct .a .av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
+.acct .a .em{font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct .a .nm{font-size:12px;color:var(--ink2)}
+.acct .a .mini{height:6px;border-radius:9px;background:var(--sunk);overflow:hidden}
+.acct .a .mini i{display:block;height:100%;border-radius:9px}
+.acct .a .acts{display:flex;gap:6px;flex-wrap:wrap}
+.acct .a .acts .btn{height:34px;padding:0 12px;font-size:12.5px}
+.acct .a.bad{border-color:color-mix(in srgb,var(--danger) 50%,var(--line))}
+.acct .a .warn{font-size:12.5px;color:var(--danger);font-weight:600}
+.acct .new{border:1.5px dashed var(--line);border-radius:16px;display:grid;place-items:center;min-height:150px;color:var(--ink2);font-weight:700;gap:6px;transition:border-color .15s,color .15s}
+.acct .new:hover{border-color:var(--pri);color:var(--pri)}
+@media (max-width:1100px){.kpi{grid-column:span 6}.c-donut,.c-break,.c-list{grid-column:1/-1}}
+@media (max-width:560px){.dash{gap:10px}.kpi{grid-column:span 6;padding:14px}.kpi .v{font-size:22px}.card{padding:16px}.donut{width:160px;height:160px;margin:0 auto}.dash-head h2{font-size:22px}}
+
+/* drop overlay */
+.drop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:color-mix(in srgb,var(--pri) 18%,transparent);backdrop-filter:blur(4px);pointer-events:none;opacity:0;transition:opacity .15s}
+.drop.on{opacity:1}
+.drop div{background:var(--surface);padding:28px 36px;border-radius:24px;box-shadow:var(--shadow-pop);text-align:center;font-weight:700;border:2px dashed var(--pri)}
+
+/* menus & sheets */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(10,15,30,.45);opacity:0;transition:opacity .2s}
+.scrim.on{opacity:1}
+.menu{position:fixed;z-index:50;min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-pop);padding:6px;transform-origin:top left;animation:pop .14s var(--ease)}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+.menu .hd{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px;font-weight:700;font-size:13px;display:flex;gap:8px;align-items:center;min-width:0}
+.menu .hd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu button{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border-radius:10px;font-size:14px;font-weight:500;text-align:left}
+.menu button:hover{background:var(--sunk)}
+.menu button.danger{color:var(--danger)}
+.menu svg.i{width:18px;height:18px;color:var(--ink2)}
+.menu button.danger svg.i{color:var(--danger)}
+
+.modal{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:16px}
+.dialog{position:relative;width:100%;max-width:440px;background:var(--surface);border-radius:24px;box-shadow:var(--shadow-pop);padding:24px;animation:rise .2s var(--ease)}
+@keyframes rise{from{opacity:0;transform:translateY(12px) scale(.98)}}
+@keyframes drop{from{opacity:0;margin-top:-16px}}
+.install{animation:drop .3s var(--ease)}
+.dialog h3{margin:0 0 6px;font-size:19px;letter-spacing:-.01em}
+.dialog .desc{color:var(--ink2);margin:0 0 16px;font-size:13.5px}
+.dialog .body{display:flex;flex-direction:column;gap:10px}
+.dialog .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.copyrow{display:flex;gap:6px}
+.copyrow .field{font-size:12.5px;height:42px}
+.lbl{font-size:12.5px;font-weight:700;color:var(--ink2);margin:4px 0 -4px}
+.picker{border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pk-path{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:8px 10px;background:var(--sunk);font-size:13px}
+.pk-path button{padding:2px 6px;border-radius:6px;font-weight:600;color:var(--ink2)}
+.pk-path button:last-child{color:var(--ink)}
+.pk-path button:hover{background:var(--surface)}
+.pk-path span{color:var(--ink3)}
+.picker .flist{max-height:220px;margin:0;padding:4px}
+.accpick{max-width:240px}
+.star{position:absolute;right:46px;top:13px;color:#f5a524;display:grid}
+.star svg{fill:#f5a524}
+.files.grid .it:not(.folder) .star{top:auto;bottom:12px;right:12px}
+.files.list .star{position:absolute;right:58px;top:50%;transform:translateY(-50%)}
+.files.list .it .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dests{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto}
+.dest{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:var(--r);min-width:0}
+.dest .sw{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+.dest.pick{cursor:pointer;transition:border-color .15s,background .15s}
+.dest.pick:has(input:checked){border-color:var(--pri);background:var(--pri-soft)}
+.dest.pick input{accent-color:var(--pri);margin:0}
+.dest.no{opacity:.5;cursor:not-allowed}
+.dest .em1{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px}
+.flist{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:2px;margin:0 -6px}
+.flist button{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;text-align:left}
+.flist button:hover{background:var(--sunk)}
+
+/* viewer */
+.viewer{position:fixed;inset:0;z-index:45;background:rgba(6,10,20,.92);display:flex;flex-direction:column;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.viewer .vh{display:flex;align-items:center;gap:10px;padding:12px 16px;color:#fff}
+.viewer .vh .t{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer .vh .icon-btn{color:#d6dcea}
+.viewer .vh .icon-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.viewer .vb{flex:1;min-height:0;display:grid;place-items:center;padding:0 16px 16px;position:relative}
+.viewer .vb img,.viewer .vb video{max-width:100%;max-height:100%;border-radius:10px}
+.viewer .vb iframe{width:100%;height:100%;border:0;border-radius:12px;background:#fff}
+.viewer .nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center}
+.viewer .nav:hover{background:rgba(255,255,255,.22)}
+.viewer .nav.l{left:16px}.viewer .nav.r{right:16px}
+.viewer .nop{color:#c7cede;text-align:center}
+
+/* uploads tray */
+.tray{position:fixed;right:20px;bottom:20px;z-index:30;width:340px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow-pop);overflow:hidden;border:1px solid var(--line)}
+.tray .th{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 12px 18px;font-weight:700;border-bottom:1px solid var(--line)}
+.tray .rows{max-height:260px;overflow:auto}
+.up{padding:12px 18px;border-top:1px solid var(--line)}
+.up:first-child{border-top:0}
+.up .n{font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.up .s{font-size:12px;color:var(--ink2);margin-top:2px}
+.up .b{height:5px;border-radius:9px;background:var(--sunk);margin-top:8px;overflow:hidden}
+.up .b i{display:block;height:100%;width:0;background:var(--pri);border-radius:9px;transition:width .3s}
+.up.ok .s{color:var(--ok)}.up.ok .b i{background:var(--ok)}
+.up.bad .s{color:var(--danger)}.up.bad .b i{background:var(--danger)}
+
+.toast{position:fixed;left:50%;bottom:24px;z-index:70;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-pop);animation:rise .2s var(--ease);max-width:calc(100vw - 32px)}
+
+footer{margin-top:auto;padding:28px 0 6px;text-align:center;color:var(--ink3);font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
+footer a{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--ink);text-decoration:none}
+footer a:hover{color:var(--pri);text-decoration:none}
+footer img{width:18px;height:18px}
+
+/* ===== Mobile ===== */
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  aside{position:fixed;left:0;top:0;bottom:0;width:300px;z-index:42;transform:translateX(-102%);transition:transform .25s var(--ease);box-shadow:var(--shadow-pop)}
+  aside.open{transform:none}
+  #menuBtn,#moreBtn{display:inline-grid}
+  aside{padding-bottom:calc(20px + env(safe-area-inset-bottom));height:100dvh}
+  .top{padding-top:calc(10px + env(safe-area-inset-top))}
+  .top{padding:10px 14px}
+  .search input{height:44px}
+  .search kbd{display:none}
+  .content{padding:0 14px 96px}
+  .crumbs{font-size:17px}
+  .files.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .files.grid .it.folder{grid-column:1/-1}
+  .files.grid .it.folder .th{height:58px}
+  .files.grid .more{opacity:1}
+  .files.list .it{grid-template-columns:26px 40px 1fr 36px}
+  .files.list .star{display:none}
+  .bar{gap:6px}.accpick{max-width:100%;flex:1 1 100%;order:3}
+  #emptyTrash{order:4}
+  .ck{opacity:0}
+  .selecting .ck,.it.sel .ck{opacity:1}
+  .selbar{bottom:calc(16px + env(safe-area-inset-bottom));padding:6px}
+  .selbar .btn span,.selbar [data-all]{display:none}
+  .selbar .btn{width:40px;padding:0;justify-content:center}
+  .sh-row{flex-wrap:wrap}.field.role{width:100%}
+  .files.list .sz,.files.list .dt{display:none}
+  #newBtn{display:none}
+  .fab{display:grid;place-items:center;position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:25;width:58px;height:58px;border-radius:20px;background:var(--pri);color:#fff;box-shadow:0 10px 26px -6px color-mix(in srgb,var(--pri) 70%,transparent)}
+  .fab svg{width:26px;height:26px}
+  .menu.sheet{left:0!important;right:0;top:auto!important;bottom:0;border-radius:24px 24px 0 0;padding:8px 10px calc(14px + env(safe-area-inset-bottom));animation:sheet .22s var(--ease)}
+  .menu.sheet::before{content:"";display:block;width:40px;height:4px;border-radius:9px;background:var(--line);margin:4px auto 8px}
+  @keyframes sheet{from{transform:translateY(100%)}}
+  .menu.sheet button{padding:14px 12px;font-size:15px}
+  .tray{left:12px;right:12px;width:auto;bottom:calc(88px + env(safe-area-inset-bottom))}
+  .dialog .acts{flex-wrap:wrap}
+  .dialog .acts .btn{flex:1 1 auto;justify-content:center;white-space:normal;text-align:center;min-height:44px;height:auto;padding-block:8px}
+  .dialog .acts [data-ok]{flex-basis:100%;order:3}
+  .viewer .nav{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="busy" role="progressbar" aria-label="Memuat"></div>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.92A6 6 0 0 1 17.7 9 4.5 4.5 0 0 1 17.5 18H7z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-fnew" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 11v5M9.5 13.5h5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5M4 20h16"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M10 13h6m-2-2 2 2-2 2"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-backup" viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.92A6 6 0 0 1 17.7 9 4.5 4.5 0 0 1 17.5 18H7z"/><path d="M12 15v-5m0 0-2 2m2-2 2 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></symbol>
+  <symbol id="i-finger" viewBox="0 0 24 24"><path d="M12 11v3a8 8 0 0 1-1.5 4.6M8.5 7.5A5 5 0 0 1 17 11v1.5M7 12.5c0 2-.4 3.6-1.3 5M12 4a7 7 0 0 1 7 7v2M5 9.5A7 7 0 0 1 8.5 5M15.5 15.5c-.3 1.6-.9 3-1.7 4.3"/></symbol>
+  <symbol id="i-kbd" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></symbol>
+  <symbol id="i-dup" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-device" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+  <symbol id="i-restore" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v5h5"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-sheet" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16"/></symbol>
+  <symbol id="i-slide" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M12 17v3M8 20h8"/></symbol>
+  <symbol id="i-form" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+  <symbol id="i-fup" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 16v-5m0 0-2.2 2.2M12 11l2.2 2.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-unlink" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1M4 4l16 16"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <!-- file type glyphs (filled tiles) -->
+  <symbol id="t-folder" viewBox="0 0 48 48"><path fill="#f5b83d" d="M4 12a4 4 0 0 1 4-4h10l4 4h18a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path fill="#ffcf5c" d="M4 18h40v18a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/></symbol>
+  <symbol id="t-file" viewBox="0 0 48 48"><path fill="#9aa6c0" d="M12 4h17l11 11v25a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><path fill="#c7cfe0" d="M29 4v7a4 4 0 0 0 4 4h7z"/></symbol>
+</svg>
+
+<!-- ===== Auth ===== -->
+<div id="authView" class="auth hidden">
+  <div class="auth-card">
+    <div class="auth-mark"><div class="logo"><svg class="i"><use href="#i-cloud"/></svg></div><b style="font-size:18px">Drive Gabungan</b></div>
+    <div class="strip-demo" aria-hidden="true"><i style="background:#2f6bff"></i><i style="background:#17a36b"></i><i style="background:#f5a524"></i><i style="background:#e5484d"></i><i style="background:var(--line);flex:1.6"></i></div>
+    <h1 id="authTitle">Masuk</h1>
+    <p id="authDesc">Masukkan password pemilik.</p>
+    <form id="authForm">
+      <input class="field" type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
+      <input class="field hidden" type="password" id="pw2" placeholder="Ulangi password" autocomplete="new-password">
+      <button class="btn pri" id="authBtn" type="submit">Masuk</button>
+      <button class="btn ghost hidden" id="pkBtn" type="button"><svg class="i"><use href="#i-finger"/></svg>Masuk dengan sidik jari / wajah</button>
+      <div class="err" id="authErr"></div>
+    </form>
+    <p class="small muted" style="margin-top:14px">Ingin memasang Drive Gabungan sendiri? <a href="/tentang" style="color:var(--pri);font-weight:600;text-decoration:none">Kenali fiturnya</a> · <a href="/panduan" style="color:var(--pri);font-weight:600;text-decoration:none">Panduan</a></p>
+    <footer>Developed by <a href="https://outsiderdev.com" target="_blank" rel="noopener"><img src="https://outsiderdev.com/img/ico.png" alt="">OutsiderDev</a></footer>
+  </div>
+</div>
+
+<!-- ===== App ===== -->
+<div id="appView" class="shell hidden">
+  <aside id="side">
+    <div class="brand"><div class="logo"><svg class="i"><use href="#i-cloud"/></svg></div>Drive Gabungan</div>
+
+    <nav class="nav" aria-label="Halaman">
+      <button id="navHome" class="on"><svg class="i"><use href="#i-home"/></svg>Beranda</button>
+      <button id="navFiles"><svg class="i"><use href="#i-grid"/></svg>Semua file</button>
+      <button id="navShared" data-sp="shared"><svg class="i"><use href="#i-share"/></svg>Dibagikan ke saya</button>
+      <button id="navStarred" data-sp="starred"><svg class="i"><use href="#i-star"/></svg>Berbintang</button>
+      <button id="navOrphan" data-sp="orphan"><svg class="i"><use href="#i-fnew"/></svg>Tanpa folder<span class="newtag" data-new="orphan">Baru</span></button>
+      <button id="navTrash" data-sp="trash"><svg class="i"><use href="#i-trash"/></svg>Sampah</button>
+      <button id="navLinks"><svg class="i"><use href="#i-link"/></svg>Link berbagi<span class="newtag" data-new="links">Baru</span></button>
+      <button id="navBackup"><svg class="i"><use href="#i-backup"/></svg>Cadangan<span class="newtag" data-new="backup">Baru</span></button>
+    </nav>
+
+    <section class="store" aria-label="Penyimpanan gabungan">
+      <div class="store-top">
+        <div class="store-num" id="stNum">–</div>
+        <div class="small muted" id="stCap"></div>
+      </div>
+      <div class="strip" id="strip"></div>
+      <div class="store-foot"><span id="stFree"></span><span id="stCount"></span></div>
+    </section>
+
+    <div id="pinsBox" class="hidden"><div class="side-h" style="margin-bottom:6px">Disematkan</div><div class="pins" id="pins"></div></div>
+    <div class="side-h">Akun</div>
+    <div class="acc-list" id="accList"></div>
+    <button class="add-acc" id="addAcc"><svg class="i"><use href="#i-plus"/></svg>Hubungkan akun Google</button>
+
+    <button class="add-acc hidden" id="installSide"><svg class="i"><use href="#i-down"/></svg>Pasang sebagai aplikasi</button>
+    <div class="side-foot">
+      <button class="icon-btn" id="themeBtn" title="Ganti tema"><svg class="i"><use href="#i-moon"/></svg></button>
+      <button class="icon-btn" id="chgPw" title="Keamanan"><svg class="i"><use href="#i-key"/></svg></button>
+      <button class="btn ghost danger" id="logout"><svg class="i"><use href="#i-out"/></svg>Keluar</button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div class="top">
+      <button class="icon-btn" id="menuBtn" aria-label="Buka menu"><svg class="i"><use href="#i-menu"/></svg></button>
+      <div class="search">
+        <svg class="i"><use href="#i-search"/></svg>
+        <input id="q" placeholder="Cari di semua Drive" autocomplete="off" aria-label="Cari file">
+        <kbd id="qk">/</kbd>
+        <button class="icon-btn x hidden" id="qx" aria-label="Hapus pencarian" title="Hapus pencarian"><svg class="i"><use href="#i-x"/></svg></button>
+      </div>
+      <button class="icon-btn bell" id="bellBtn" aria-label="Notifikasi"><svg class="i"><use href="#i-bell"/></svg><span class="badge hidden" id="bellN"></span><span class="newdot" data-new="bell"></span></button>
+      <button class="icon-btn" id="moreBtn" aria-label="Menu akun"><svg class="i"><use href="#i-dots"/></svg></button>
+      <button class="btn pri" id="newBtn"><svg class="i"><use href="#i-plus"/></svg>Baru</button>
+      <input type="file" id="fileIn" multiple class="hidden">
+      <input type="file" id="dirIn" webkitdirectory multiple class="hidden">
+    </div>
+
+    <div class="content">
+      <div class="dash" id="dash"></div>
+      <div id="filesPage" class="hidden">
+      <div class="bar">
+        <nav class="crumbs" id="crumbs" aria-label="Lokasi"></nav>
+        <select class="sort accpick hidden" id="accPick" aria-label="Pilih akun"></select>
+        <button class="btn ghost danger hidden" id="emptyTrash"><svg class="i"><use href="#i-trash"/></svg>Kosongkan sampah</button>
+        <select class="sort" id="sort" aria-label="Urutkan">
+          <option value="name">Nama A–Z</option>
+          <option value="new">Terbaru</option>
+          <option value="big">Terbesar</option>
+        </select>
+        <div class="seg" role="group" aria-label="Tampilan">
+          <button id="vGrid" class="on" title="Grid"><svg class="i"><use href="#i-grid"/></svg></button>
+          <button id="vList" title="Daftar"><svg class="i"><use href="#i-list"/></svg></button>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="sfilt hidden" id="sfilt">
+        <button class="chip" id="fContent">Cari juga di isi file<span class="newtag" data-new="search">Baru</span></button>
+        <select class="sort" id="fWhen" aria-label="Waktu diubah"><option value="">Kapan saja</option><option value="1">Hari ini</option><option value="7">7 hari terakhir</option><option value="30">30 hari terakhir</option><option value="365">Setahun terakhir</option></select>
+        <select class="sort" id="fSize" aria-label="Ukuran"><option value="">Semua ukuran</option><option value="10">Lebih dari 10 MB</option><option value="100">Lebih dari 100 MB</option><option value="1024">Lebih dari 1 GB</option></select>
+        <select class="sort" id="fOwner" aria-label="Pemilik"><option value="">Pemilik siapa saja</option><option value="me">Milik saya</option><option value="others">Milik orang lain</option></select>
+      </div>
+      <div id="notes"></div>
+      <div class="files grid" id="files"></div>
+      <div class="empty hidden" id="empty"></div>
+      </div>
+      <footer>Developed by <a href="https://outsiderdev.com" target="_blank" rel="noopener"><img src="https://outsiderdev.com/img/ico.png" alt="">OutsiderDev</a></footer>
+    </div>
+  </main>
+</div>
+
+<button class="fab hidden" id="fab" aria-label="Tambah"><svg class="i"><use href="#i-plus"/></svg></button>
+<aside class="drawer hidden" id="drawer" aria-label="Detail"></aside>
+<div class="drop" id="drop"><div><svg class="i" style="width:34px;height:34px;color:var(--pri)"><use href="#i-up"/></svg><br>Lepaskan untuk upload</div></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const FOLDER = 'application/vnd.google-apps.folder';
+const CHUNK = 8 * 1024 * 1024;
+const S = { f: { content: false, when: '', size: '', owner: '' }, pins: [], special: null, sel: new Set(), selItems: new Map(), page: 'home', dashFiles: [], bigAcc: (() => { try { const v = localStorage.getItem('dg_bigAcc'); return v && v !== 'all' ? Number(v) : 'all'; } catch { return 'all'; } })(), acc: 'all', path: [], files: [], accounts: [], q: '', type: '', sort: 'name',
+  view: store('view') || 'grid', state: null };
+
+function store(k, v) { try { if (v === undefined) return localStorage.getItem('dg_' + k); localStorage.setItem('dg_' + k, v); } catch (e) { return null; } }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function szl(f) { return Number(f.size) > 0 ? fmt(f.size) : '—'; }
+function fmt(b) {
+  if (b == null || isNaN(b)) return '';
+  const u = ['B', 'KB', 'MB', 'GB', 'TB']; let i = 0; b = Number(b);
+  while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
+  return (i ? b.toFixed(b < 10 ? 1 : 0) : b) + ' ' + u[i];
+}
+function ago(d) {
+  if (!d) return '';
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' mnt lalu';
+  if (s < 86400) return Math.round(s / 3600) + ' jam lalu';
+  if (s < 86400 * 7) return Math.round(s / 86400) + ' hari lalu';
+  return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function dshort(d) { return d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
+function ic(id) { return `<svg class="i"><use href="#i-${id}"/></svg>`; }
+let toastT;
+function toast(m, action) {
+  document.querySelectorAll('.toast').forEach((t) => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status');
+  t.textContent = m;
+  if (action) {
+    const b = document.createElement('button'); b.textContent = action[0];
+    b.onclick = () => { t.remove(); action[1](); }; t.appendChild(b);
+  }
+  document.body.appendChild(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), action ? 6500 : 3200);
+}
+// avatar akun: foto Google bila ada, inisial berwarna bila tidak
+function avatar(a, size = 28, ring = true) {
+  if (!a || !a.email) return `<span class="avt" style="width:${size}px;height:${size}px;background:#999"></span>`;
+  const st = `width:${size}px;height:${size}px;${ring ? `box-shadow:0 0 0 2px ${a.color}` : ''}`;
+  return a.photo
+    ? `<img class="avt" src="${esc(a.photo)}" alt="" referrerpolicy="no-referrer" style="${st}" title="${esc(a.email)}" onerror="this.outerHTML='<span class=&quot;avt&quot; style=&quot;${st};background:${a.color}&quot;>${esc(a.email[0].toUpperCase())}</span>'">`
+    : `<span class="avt" style="${st};background:${a.color};font-size:${Math.round(size * 0.45)}px" title="${esc(a.email)}">${esc(a.email[0].toUpperCase())}</span>`;
+}
+// tanda "Baru" untuk fitur baru; hilang setelah fitur dicoba
+const NEWF = ['links', 'backup', 'pins', 'bell', 'search', 'transfer', 'details', 'orphan'];
+const isNew = (k) => NEWF.includes(k) && !store('seen_' + k);
+const newTag = (k) => (isNew(k) ? '<span class="newtag">Baru</span>' : '');
+function seen(k) { if (!isNew(k)) return; store('seen_' + k, 1); document.querySelectorAll(`[data-new="${k}"]`).forEach((x) => x.remove()); }
+const dur = (ms) => { if (!ms) return ''; const t = Math.round(ms / 1000), h = Math.floor(t / 3600), m2 = Math.floor((t % 3600) / 60), s2 = String(t % 60).padStart(2, '0'); return h ? `${h}:${String(m2).padStart(2, '0')}:${s2}` : `${m2}:${s2}`; };
+// Indikator memuat: garis berjalan di atas layar selama ada permintaan ke server
+let busyN = 0, busyT = null;
+function busy(on) {
+  busyN = Math.max(0, busyN + (on ? 1 : -1));
+  const el = $('#busy'); if (!el) return;
+  clearTimeout(busyT);
+  if (busyN) busyT = setTimeout(() => { el.classList.add('on'); document.body.classList.add('is-busy'); }, 120); // hindari kedip untuk respons cepat
+  else { el.classList.remove('on'); document.body.classList.remove('is-busy'); }
+}
+async function api(path, opt = {}) {
+  const { quiet, ...o } = opt;
+  if (!quiet) busy(true);
+  let r;
+  try { r = await fetch(path, { credentials: 'same-origin', ...o }); }
+  catch (e) { throw new Error('Tidak ada koneksi. Periksa internet lalu coba lagi.'); }
+  finally { if (!quiet) busy(false); }
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401 && !path.includes('login')) { showAuth(); throw new Error(d.error || 'Silakan masuk lagi'); }
+  if (!r.ok) throw new Error(d.error || 'Terjadi kesalahan (' + r.status + ')');
+  return d;
+}
+const post = (p, b) => api(p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) });
+const accOf = (id) => S.accounts.find((a) => a.id == id) || {};
+
+// ---------- tema ----------
+function applyTheme() { const t = store('theme'); if (t) document.documentElement.dataset.theme = t; }
+applyTheme();
+$('#themeBtn').onclick = () => {
+  const dark = document.documentElement.dataset.theme
+    ? document.documentElement.dataset.theme === 'dark'
+    : matchMedia('(prefers-color-scheme: dark)').matches;
+  const t = dark ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t; store('theme', t);
+};
+
+// ---------- jenis file ----------
+const KIND = [
+  ['folder', 'Folder', '#f5b83d', (m) => m === FOLDER],
+  ['image', 'Gambar', '#17a36b', (m) => m.startsWith('image/')],
+  ['video', 'Video', '#e5484d', (m) => m.startsWith('video/')],
+  ['audio', 'Audio', '#a855f7', (m) => m.startsWith('audio/')],
+  ['pdf', 'PDF', '#d93636', (m) => m === 'application/pdf'],
+  ['doc', 'Dokumen', '#2f6bff', (m) => /document|word|spreadsheet|excel|presentation|powerpoint/.test(m)],
+];
+function kindOf(m) {
+  if (/spreadsheet|excel/.test(m)) return ['sheet', '#15a35a', 'XLS'];
+  if (/presentation|powerpoint/.test(m)) return ['slide', '#f08c1d', 'PPT'];
+  if (/document|word/.test(m)) return ['doc', '#2f6bff', 'DOC'];
+  if (m === 'application/pdf') return ['pdf', '#d93636', 'PDF'];
+  if (m.startsWith('image/')) return ['img', '#17a36b', 'IMG'];
+  if (m.startsWith('video/')) return ['vid', '#e5484d', 'VID'];
+  if (m.startsWith('audio/')) return ['aud', '#a855f7', 'AUD'];
+  if (/zip|compressed|rar|7z/.test(m)) return ['zip', '#7c6b55', 'ZIP'];
+  return ['file', '#7a86a3', ''];
+}
+function glyph(m) {
+  if (m === FOLDER) return '<svg class="ft" viewBox="0 0 48 48"><use href="#t-folder"/></svg>';
+  const [, c, lbl] = kindOf(m);
+  return `<svg class="ft" viewBox="0 0 48 48"><path fill="${c}" d="M12 4h17l11 11v25a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><path fill="#fff" opacity=".45" d="M29 4v7a4 4 0 0 0 4 4h7z"/>${lbl ? `<text x="24" y="34" text-anchor="middle" font-size="9" font-weight="800" fill="#fff" font-family="Plus Jakarta Sans,sans-serif">${lbl}</text>` : ''}</svg>`;
+}
+function renderChips() {
+  $('#chips').innerHTML = `<button class="chip ${!S.type ? 'on' : ''}" data-t="">Semua</button>` +
+    KIND.map(([k, l]) => `<button class="chip ${S.type === k ? 'on' : ''}" data-t="${k}">${l}</button>`).join('');
+}
+$('#chips').onclick = (e) => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  S.type = c.dataset.t; renderChips(); load();
+};
+
+// ---------- auth ----------
+let authMode = 'login';
+function showAuth(mode) {
+  $('#appView').classList.add('hidden'); $('#fab').classList.add('hidden'); $('#authView').classList.remove('hidden');
+  authMode = mode === 'setup' ? 'setup' : 'login';
+  $('#pw2').classList.toggle('hidden', authMode !== 'setup');
+  $('#pw2').required = authMode === 'setup';
+  $('#authTitle').textContent = authMode === 'setup' ? 'Buat password pemilik' : 'Masuk';
+  $('#authDesc').textContent = authMode === 'setup'
+    ? 'Instance ini baru. Password ini hanya untukmu, minimal 8 karakter.'
+    : 'Masukkan password pemilik.';
+  $('#authBtn').textContent = authMode === 'setup' ? 'Simpan dan masuk' : 'Masuk';
+  if (mode === 'locked') { $('#authTitle').textContent = 'Terkunci'; $('#authDesc').textContent = 'Dikunci otomatis karena tidak aktif. Masuk lagi untuk melanjutkan.'; }
+  api('/api/state').then((st) => $('#pkBtn').classList.toggle('hidden', !(st.passkey && authMode !== 'setup' && window.PublicKeyCredential))).catch(() => {});
+  setTimeout(() => $('#pw').focus(), 50);
+}
+$('#authForm').onsubmit = async (e) => {
+  e.preventDefault(); $('#authErr').textContent = ''; $('#authBtn').disabled = true;
+  try {
+    if (authMode === 'setup') {
+      if ($('#pw').value !== $('#pw2').value) throw new Error('Kedua password tidak sama');
+      await post('/api/setup', { password: $('#pw').value });
+    } else await post('/api/login', { password: $('#pw').value });
+    $('#pw').value = $('#pw2').value = '';
+    startApp();
+  } catch (err) { $('#authErr').textContent = err.message; }
+  $('#authBtn').disabled = false;
+};
+$('#logout').onclick = () => dialog({
+  title: 'Keluar dari Drive Gabungan?',
+  desc: 'Kamu perlu memasukkan password pemilik lagi di perangkat ini. Akun Google yang terhubung tidak terpengaruh.',
+  ok: 'Keluar', danger: true,
+  run: async () => { await post('/api/logout', {}); closeSide(); showAuth(); },
+});
+$('#chgPw').onclick = () => security();
+
+// ---------- akun & pita penyimpanan ----------
+async function loadAccounts() {
+  const { accounts } = await api('/api/accounts');
+  S.accounts = accounts;
+  const ok = accounts.filter((a) => !a.error);
+  const use = ok.reduce((s, a) => s + a.usage, 0);
+  const unlimited = ok.some((a) => a.limit == null);
+  const lim = ok.reduce((s, a) => s + (a.limit || 0), 0);
+
+  $('#stNum').innerHTML = accounts.length ? `${fmt(use).replace(' ', '<small>')}</small>` : '0<small>GB</small>';
+  $('#stCap').textContent = accounts.length ? 'dari ' + (unlimited ? 'tak terbatas' : fmt(lim)) : '';
+  $('#stFree').textContent = accounts.length ? (unlimited ? 'Ruang kosong tak terbatas' : fmt(Math.max(0, lim - use)) + ' kosong') : 'Belum ada akun';
+  $('#stCount').textContent = accounts.length ? accounts.length + ' akun' : '';
+  const total = unlimited ? use || 1 : lim || 1;
+  $('#strip').innerHTML = ok.map((a) => `<span title="${esc(a.email)}: ${fmt(a.usage)}" style="flex-grow:${a.usage / total};background:${a.color}"></span>`).join('') +
+    `<span class="free" style="flex-grow:${Math.max(0, (total - use) / total)}"></span>`;
+
+  $('#accList').innerHTML = accounts.map((a) => {
+    const pct = a.limit ? Math.min(100, (a.usage / a.limit) * 100) : 0;
+    return `<div class="acc ${S.page === 'files' && S.acc == a.id ? 'on' : ''} ${a.error ? 'err' : ''}" data-id="${a.id}" tabindex="0" role="button">
+      ${avatar(a, 30)}
+      <div class="meta"><div class="em" title="${esc(a.email)}">${esc(a.email)}</div>
+        ${a.error ? `<div class="sub">Perlu dihubungkan ulang</div>`
+          : `<div class="mini"><i style="width:${pct}%;background:${a.color}"></i></div><div class="sub">${fmt(a.usage)} dari ${a.limit ? fmt(a.limit) : '∞'}</div>`}
+      </div>
+      <button class="icon-btn rm" data-rm="${a.id}" title="Putuskan akun" aria-label="Putuskan ${esc(a.email)}">${ic('x')}</button>
+    </div>`;
+  }).join('');
+  if (accounts.length) $('#accList').insertAdjacentHTML('afterbegin',
+    `<div class="acc ${S.page === 'files' && S.acc === 'all' ? 'on' : ''}" data-id="all" tabindex="0" role="button"><span class="sw" style="background:conic-gradient(${ok.map((a, i) => `${a.color} ${i * 100 / ok.length}% ${(i + 1) * 100 / ok.length}%`).join(',') || 'var(--pri) 0 100%'})"></span><div class="meta"><div class="em">Semua akun</div></div></div>`);
+}
+$('#side').addEventListener('click', async (e) => {
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { e.stopPropagation(); return disconnect(rm.dataset.rm); }
+  const el = e.target.closest('.acc'); if (!el) return;
+  openAccount(el.dataset.id); closeSide();
+});
+$('#side').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('acc')) e.target.click(); });
+function disconnect(id) {
+  const a = accOf(id);
+  dialog({
+    title: 'Putuskan akun ini?',
+    desc: `${a.email} akan dihapus dari Drive Gabungan dan izin aksesnya dicabut. File di Google Drive-nya tidak terhapus, dan akun bisa dihubungkan lagi kapan saja.`,
+    ok: 'Putuskan akun', danger: true,
+    run: async () => {
+      await api('/api/accounts?id=' + a.id, { method: 'DELETE' });
+      if (S.acc == a.id) S.acc = 'all';
+      S.path = []; await loadAccounts(); toast('Akun ' + a.email + ' diputuskan');
+      S.page === 'home' ? loadDash() : load();
+    },
+  });
+}
+function openAccount(id) {
+  S.special = null; S.acc = id; S.path = []; clearSearch(false); go('files');
+}
+function go(page) {
+  S.page = page;
+  $('#dash').classList.toggle('hidden', page !== 'home');
+  $('#filesPage').classList.toggle('hidden', page !== 'files');
+  $('#navHome').classList.toggle('on', page === 'home');
+  $('#navFiles').classList.toggle('on', page === 'files' && S.acc === 'all' && !S.special);
+  document.querySelectorAll('.nav [data-sp]').forEach((b) => b.classList.toggle('on', page === 'files' && S.special === b.dataset.sp));
+  document.querySelectorAll('.acc').forEach((x) => x.classList.toggle('on', page === 'files' && !S.special && x.dataset.id == S.acc));
+  specialBar();
+  closeSide();
+  page === 'home' ? loadDash() : load();
+}
+$('#navHome').onclick = () => go('home');
+function openSpecial(sp) {
+  const ok = S.accounts.filter((a) => !a.error);
+  if (!ok.length) return toast('Hubungkan akun Google dulu');
+  const last = store('acc_' + sp);
+  if (sp === 'orphan') seen('orphan');
+  S.special = sp; S.acc = ok.some((a) => a.id == last) ? Number(last) : ok[0].id;
+  S.path = []; clearSearch(false); go('files');
+}
+document.querySelectorAll('.nav [data-sp]').forEach((b) => (b.onclick = () => openSpecial(b.dataset.sp)));
+function specialBar() {
+  // Urutan bawaan per menu: Dibagikan = terbaru dibagikan, Tanpa folder = terbesar, lainnya = pilihan tersimpan
+  const spKey = S.page === 'files' ? (S.special || '') : null;
+  if (spKey !== null && spKey !== S.sortFor) {
+    S.sortFor = spKey;
+    S.sort = spKey === 'shared' ? 'new' : spKey === 'orphan' ? 'big' : (store('sort') || 'name');
+    $('#sort').value = S.sort;
+  }
+  const root = S.page === 'files' && !S.path.length;
+  const on = root && S.special, allOn = root && !S.special;
+  const pick = $('#accPick');
+  pick.classList.toggle('hidden', !(on || allOn));
+  $('#emptyTrash').classList.toggle('hidden', !(on && S.special === 'trash'));
+  const opts = S.accounts.filter((a) => !a.error).map((a) => `<option value="${a.id}" ${a.id == S.acc ? 'selected' : ''}>${esc(a.email)}</option>`).join('');
+  if (on) pick.innerHTML = opts;
+  else if (allOn) pick.innerHTML = `<option value="all" ${S.acc === 'all' ? 'selected' : ''}>Semua akun</option>` + opts;
+}
+$('#accPick').onchange = () => {
+  const v = $('#accPick').value;
+  if (!S.special) { S.acc = v === 'all' ? 'all' : Number(v); clearSearch(false); return go('files'); }
+  S.acc = Number(v); store('acc_' + S.special, S.acc); load();
+};
+$('#emptyTrash').onclick = () => {
+  const a = accOf(S.acc);
+  dialog({
+    title: 'Kosongkan sampah?', desc: `Semua item di sampah ${a.email} akan dihapus selamanya dan tidak bisa dipulihkan.`,
+    ok: 'Hapus selamanya', danger: true,
+    run: async () => { await post('/api/empty-trash', { acc: a.id }); toast('Sampah ' + a.email + ' dikosongkan'); load(); loadAccounts(); },
+  });
+};
+$('#navFiles').onclick = () => { S.special = null; S.acc = 'all'; S.path = []; clearSearch(false); go('files'); };
+
+// ---------- beranda / dashboard ----------
+let dashSeq = 0;
+function greet() { const h = new Date().getHours(); return h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam'; }
+// File terbesar: hanya milik sendiri (yang memakai kuota), bisa dipilah per akun
+function bigCard(d) {
+  const accs = S.accounts.filter((a) => !a.error);
+  if (S.bigAcc !== 'all' && !accs.some((a) => a.id == S.bigAcc)) S.bigAcc = 'all';
+  const pick = d.largest.map((f, i) => ({ f, i: d.recent.length + i })).filter((x) => S.bigAcc === 'all' || x.f.acc == S.bigAcc);
+  const top = pick.slice(0, 8);
+  const maxBig = Math.max(1, ...top.map((x) => Number(x.f.size || 0)));
+  const sumAcc = (id) => d.largest.filter((f) => f.acc == id).reduce((n, f) => n + Number(f.size || 0), 0);
+  const chips = `<div class="bigchips"><button class="chip ${S.bigAcc === 'all' ? 'on' : ''}" data-bigacc="all">Semua akun</button>` +
+    accs.map((a) => `<button class="chip ${S.bigAcc == a.id ? 'on' : ''}" data-bigacc="${a.id}"><span class="sw" style="background:${a.color}"></span>${esc((a.email || '').split('@')[0])}</button>`).join('') + '</div>';
+  const a = S.bigAcc === 'all' ? null : accOf(S.bigAcc);
+  const sub = a ? `${pick.length} file terbesar di ${esc(a.email)} memakai ${fmt(sumAcc(a.id))} dari ${fmt(a.usage || 0)} terpakai.` : 'File milik Anda yang paling memakan kuota. Pilih akun untuk merinci.';
+  const rows = top.map((x) => fileRow(x.f, x.i, fmt(x.f.size), `<div class="bigbar"><i style="width:${(Number(x.f.size || 0) / maxBig) * 100}%;background:${accOf(x.f.acc).color}"></i></div>`)).join('');
+  return `<h3>File terbesar</h3><p class="sub">${sub}</p>${chips}
+    <div class="rows">${rows || '<p class="muted small">Belum ada file.</p>'}</div>
+    ${a && pick.length ? `<button class="btn ghost bigmanage" data-bigmanage="${a.id}">${ic('trash')}Kelola ${pick.length} file terbesar akun ini</button>` : ''}`;
+}
+function fileRow(f, i, meta, bar) {
+  const a = accOf(f.acc);
+  const th = f.hasThumb ? `<img loading="lazy" alt="" src="/api/thumb?acc=${f.acc}&id=${encodeURIComponent(f.id)}" onerror="this.outerHTML=glyph('${esc(f.mimeType)}')">` : glyph(f.mimeType);
+  return `<div class="rw"><button class="r" data-v="${i}"><div class="th">${th}<span class="tag" style="background:${a.color}"></span></div>
+    <div class="n"><b>${esc(f.name)}</b><span>${esc((a.email || '').split('@')[0])}</span>${bar || ''}</div><div class="m">${meta}</div></button>
+    <button class="icon-btn loc" data-loc="${i}" title="Buka lokasi file" aria-label="Buka lokasi ${esc(f.name)}">${ic('move')}</button></div>`;
+}
+async function loadDash() {
+  const my = ++dashSeq; const d$ = $('#dash');
+  if (!d$.dataset.ready) d$.innerHTML = `<div class="dash-head"><div><h2>${greet()}</h2><p>Memuat ringkasan…</p></div></div>` +
+    ['kpi', 'kpi', 'kpi', 'kpi'].map(() => '<div class="kpi sk" style="height:118px"></div>').join('') +
+    '<div class="c-donut sk" style="height:280px"></div><div class="c-break sk" style="height:280px"></div>';
+  let d;
+  try { d = await api('/api/overview'); } catch (e) { if (my === dashSeq) d$.innerHTML = `<div class="notice" style="grid-column:1/-1">${esc(e.message)}</div>`; return; }
+  if (my !== dashSeq) return;
+  d$.dataset.ready = 1;
+  S.accounts = d.accounts;
+  const acc = d.accounts, ok = acc.filter((a) => !a.error);
+  const use = ok.reduce((s, a) => s + a.usage, 0);
+  const unl = ok.some((a) => a.limit == null);
+  const lim = ok.reduce((s, a) => s + (a.limit || 0), 0);
+  const trash = ok.reduce((s, a) => s + (a.trash || 0), 0);
+  const free = Math.max(0, lim - use);
+  const pctN = lim ? (use / lim) * 100 : 0;
+  const pct = use > 0 && pctN < 1 ? '&lt;1' : Math.round(pctN); // kuota TB: jangan tampil 0% padahal terpakai
+  const bad = acc.filter((a) => a.error).length;
+
+  if (!acc.length) {
+    d$.innerHTML = `<div class="dash-head"><div><h2>${greet()}</h2><p>Mulai dengan menghubungkan akun Google pertamamu.</p></div></div>
+      <div class="card" style="grid-column:1/-1"><div class="empty" style="padding:28px 8px"><div><div class="art">${ic('cloud')}</div><h3>Belum ada Drive yang terhubung</h3><p>Setiap akun Google menambah ruang penyimpanan gabunganmu.</p><button class="btn pri" data-add>${ic('plus')}Hubungkan akun Google</button></div></div></div>`;
+    return;
+  }
+
+  // donut
+  const C = 2 * Math.PI * 70; let off = 0;
+  const tot = use || 1; // donut = pembagian ruang terpakai antar akun
+  const labels = [];
+  const segs = ok.map((a) => {
+    const len = (a.usage / tot) * C;
+    const s = `<circle r="70" cx="95" cy="95" data-a="${a.id}" stroke="${a.color}" stroke-dasharray="${Math.max(0, len - 2)} ${C}" stroke-dashoffset="${-off}"><title>${esc(a.email)}: ${fmt(a.usage)}</title></circle>`;
+    // label persen di tengah segmen (dihitung dari jam 12, searah jarum jam)
+    const share = a.usage / tot;
+    if (share >= 0.04) {
+      const ang = ((off + len / 2) / C) * 2 * Math.PI - Math.PI / 2;
+      labels.push(`<text class="pl" x="${95 + 70 * Math.cos(ang)}" y="${95 + 70 * Math.sin(ang)}" text-anchor="middle" dominant-baseline="central">${Math.round(share * 100)}%</text>`);
+    }
+    off += len; return s;
+  }).join('');
+
+  S.dashData = d;
+  S.dashFiles = [...d.recent, ...d.largest];
+
+  d$.innerHTML = `
+    <div class="dash-head"><div><h2>${greet()}</h2><p>${acc.length} akun Google tergabung${bad ? ` · ${bad} perlu dihubungkan ulang` : ''}</p></div>
+      <button class="icon-btn" data-refresh title="Muat ulang">${ic('refresh')}</button></div>
+
+    <div class="card kpi lead"><span class="k">Terpakai</span><span class="v">${fmt(use).replace(' ', '<small>')}</small></span><span class="h">${unl ? 'dari ruang tak terbatas' : pct + '% dari ' + fmt(lim)}</span></div>
+    <div class="card kpi"><span class="k">Ruang kosong</span><span class="v">${unl ? '∞' : fmt(free).replace(' ', '<small>') + '</small>'}</span><span class="h">tersebar di ${ok.length} akun</span></div>
+    <div class="card kpi"><span class="k">Di sampah</span><span class="v">${fmt(trash).replace(' ', '<small>')}</small></span><span class="h">${trash ? 'bisa dikosongkan dari Google Drive' : 'sampah sudah bersih'}</span>${trash ? '<a class="act" href="https://drive.google.com/drive/trash" target="_blank" rel="noopener">Buka sampah Drive</a>' : ''}</div>
+    <div class="card kpi"><span class="k">Akun terhubung</span><span class="v">${acc.length}</span><span class="h">${bad ? bad + ' bermasalah' : 'semua aktif'}</span><button class="act" data-add>+ Tambah akun</button></div>
+
+    <div class="card c-donut"><h3>Ruang per akun</h3><p class="sub">Donut: porsi tiap akun dari total terpakai. Daftar: terpakai dari kapasitas akun.</p>
+      <div class="donut-wrap"><div class="donut"><svg viewBox="0 0 190 190"><g transform="rotate(-90 95 95)"><circle r="70" cx="95" cy="95" stroke="var(--sunk)" style="cursor:default"></circle>${segs}</g>${labels.join('')}</svg>
+        <div class="mid"><div><b data-mv>${fmt(use)}</b><span data-ml>${unl ? 'terpakai' : pct + '% dari ' + fmt(lim)}</span></div></div></div>
+      <div class="legend">${ok.map((a) => { const pr = a.limit ? (a.usage / a.limit) * 100 : 0, p3 = a.usage > 0 && pr < 1 ? '&lt;1' : Math.round(pr); return `<button data-a="${a.id}">${avatar(a, 26)}<div class="lg"><div class="lt"><span class="l">${esc(a.email)}</span><span class="r">${p3}%</span></div>
+        <div class="lb"><i style="width:${a.usage > 0 ? Math.max(1.5, pr) : 0}%;background:${a.color}"></i></div>
+        <div class="ls">${fmt(a.usage)} terpakai${a.limit ? ' · ' + fmt(Math.max(0, a.limit - a.usage)) + ' kosong' : ''}</div></div></button>`; }).join('')}</div></div></div>
+
+    <div class="card c-break"><h3>Isi penyimpanan</h3><p class="sub">Kuota Google dibagi untuk Drive, Gmail, dan Foto.</p>
+      <div class="brk">${ok.map((a) => {
+        const other = Math.max(0, a.usage - a.drive - a.trash), cap = a.limit || a.usage || 1;
+        return `<div class="row"><div class="t"><b>${esc(a.email)}</b><span>${fmt(a.usage)}${a.limit ? ' / ' + fmt(a.limit) : ''}</span></div>
+          <div class="bar2">${a.usage / cap < 0.02
+            ? `<i class="dot" style="background:${a.drive >= other ? 'var(--c-drive)' : 'var(--c-mail)'}" title="Terpakai ${fmt(a.usage)} dari ${fmt(cap)}"></i>`
+            : `<i style="flex-grow:${a.drive / cap};background:var(--c-drive)" title="Drive: ${fmt(a.drive)}"></i><i style="flex-grow:${other / cap};background:var(--c-mail)" title="Gmail & Foto: ${fmt(other)}"></i><i style="flex-grow:${a.trash / cap};background:var(--c-trash)" title="Sampah: ${fmt(a.trash)}"></i><i style="flex-grow:${Math.max(0, cap - a.usage) / cap}"></i>`}</div>
+          <div class="bd">${[['Drive', a.drive, '--c-drive'], ['Gmail & Foto', other, '--c-mail'], ['Sampah', a.trash, '--c-trash']].filter((x) => x[1] > 0).map((x) => `<span><i style="background:var(${x[2]})"></i>${x[0]} ${fmt(x[1])}</span>`).join('') || 'Kosong'}</div></div>`;
+      }).join('')}</div>
+      <div class="brk-key"><span><i style="background:var(--c-drive)"></i>Drive</span><span><i style="background:var(--c-mail)"></i>Gmail &amp; Foto</span><span><i style="background:var(--c-trash)"></i>Sampah</span></div></div>
+
+    <div class="card c-list"><h3>Terakhir diubah</h3><p class="sub">Dari semua akun.</p>
+      <div class="rows">${d.recent.map((f, i) => fileRow(f, i, ago(f.modifiedTime))).join('') || '<p class="muted small">Belum ada file.</p>'}</div></div>
+    <div class="card c-list" id="bigCard">${bigCard(d)}</div>
+
+    <div class="card c-tips" id="tips"><h3>Saran merapikan ruang</h3><p class="sub">Menganalisis file di semua akun…</p><div class="sk" style="height:90px"></div></div>
+    <div class="card c-act" id="actv"><h3>Aktivitas terbaru</h3><p class="sub">Yang dilakukan lewat Drive Gabungan.</p><div class="sk" style="height:90px"></div></div>
+
+    <div class="card c-acc"><h3>Kelola akun</h3><p class="sub">Lihat isi, hubungkan ulang jika bermasalah, atau putuskan akun yang tidak dipakai lagi.</p>
+      <div class="acct">${acc.map((a) => {
+        const p2 = a.limit ? Math.min(100, (a.usage / a.limit) * 100) : 0;
+        return `<div class="a ${a.error ? 'bad' : ''}"><div class="top2">${avatar(a, 38)}
+          <div style="min-width:0"><div class="em">${esc(a.email)}</div><div class="nm">${esc(a.name || '')}</div></div></div>
+          ${a.error ? `<div class="warn">Akses terputus. Hubungkan ulang akun ini.</div>` : `<div class="mini"><i style="width:${p2}%;background:${a.color}"></i></div><div class="small muted">${fmt(a.usage)} dari ${a.limit ? fmt(a.limit) : 'tak terbatas'} · ${a.limit ? fmt(Math.max(0, a.limit - a.usage)) + ' kosong' : ''}</div>`}
+          <div class="acts">${a.error ? '' : `<button class="btn ghost" data-open="${a.id}">${ic('grid')}Lihat file</button>`}
+            <button class="btn ghost" data-re="${a.id}">${ic('link')}Hubungkan ulang</button>
+            <button class="btn ghost danger" data-dc="${a.id}">${ic('unlink')}Putuskan</button></div></div>`;
+      }).join('')}<button class="new" data-add><div style="text-align:center">${ic('plus')}<br>Hubungkan akun Google</div></button></div></div>`;
+  loadInsights(my); loadActivity();
+  if (d.errors.length) d$.insertAdjacentHTML('afterbegin', d.errors.map((x) => `<div class="notice" style="grid-column:1/-1">${esc(x)}</div>`).join(''));
+}
+$('#dash').addEventListener('click', (e) => {
+  const t = e.target.closest('button,[data-a]'); if (!t) return;
+  if (t.matches('[data-add]')) return $('#addAcc').click();
+  if (t.matches('[data-refresh]')) { loadAccounts(); return loadDash(); }
+  if (t.dataset.open) return openAccount(t.dataset.open);
+  if (t.dataset.dc) return disconnect(t.dataset.dc);
+  if (t.dataset.re) return (location.href = '/oauth/start');
+  if (t.dataset.bigacc != null) { S.bigAcc = t.dataset.bigacc === 'all' ? 'all' : Number(t.dataset.bigacc); store('bigAcc', S.bigAcc); return ($('#bigCard').innerHTML = bigCard(S.dashData)); }
+  if (t.dataset.bigmanage != null) {
+    const id = Number(t.dataset.bigmanage), a = accOf(id);
+    return reviewList('File terbesar di ' + a.email, 'Centang file, lalu pindahkan ke akun lain yang lebih lega atau buang ke sampah.', [{ files: S.dashData.largest.filter((f) => f.acc == id) }]);
+  }
+  if (t.dataset.loc != null) return openLocation(S.dashFiles[Number(t.dataset.loc)], Number(t.dataset.loc));
+  if (t.dataset.v != null) { view = S.dashFiles; return viewer(Number(t.dataset.v)); }
+  if (t.dataset.a) openAccount(t.dataset.a);
+});
+function hiAcc(id) {
+  const a = id && accOf(id);
+  document.querySelectorAll('#dash .donut circle[data-a]').forEach((c) => { c.classList.toggle('hi', c.dataset.a == id); c.classList.toggle('dim', !!id && c.dataset.a != id); });
+  document.querySelectorAll('#dash .legend button').forEach((b) => b.classList.toggle('hi', b.dataset.a == id));
+  const mv = $('#dash [data-mv]'), ml = $('#dash [data-ml]'); if (!mv) return;
+  if (a) { const ok = S.accounts.filter((x) => !x.error), u = ok.reduce((s, x) => s + x.usage, 0) || 1; mv.textContent = Math.round((a.usage / u) * 100) + '%'; ml.textContent = a.email; }
+  else { const ok = S.accounts.filter((x) => !x.error), u = ok.reduce((s, x) => s + x.usage, 0), l = ok.reduce((s, x) => s + (x.limit || 0), 0); mv.textContent = fmt(u); ml.textContent = l ? (u > 0 && u / l < 0.01 ? '<1' : Math.round((u / l) * 100)) + '% dari ' + fmt(l) : 'terpakai'; }
+}
+$('#dash').addEventListener('pointerover', (e) => { const t = e.target.closest('[data-a]'); if (t && t.closest('.donut,.legend')) hiAcc(t.dataset.a); });
+$('#dash').addEventListener('pointerout', (e) => { if (e.target.closest('.donut,.legend') && !e.relatedTarget?.closest?.('.donut,.legend')) hiAcc(null); });
+
+$('#addAcc').onclick = () => (S.state && !S.state.configured ? googleSetup() : (location.href = '/oauth/start'));
+function googleSetup() {
+  const ru = S.state.redirectUri;
+  dialog({
+    title: 'Hubungkan ke Google Cloud',
+    desc: 'Sekali saja. Buat OAuth Client tipe Web application di Google Cloud Console, daftarkan Redirect URI ini, lalu tempel Client ID dan Secret-nya.',
+    body: `<div class="copyrow"><input class="field" readonly value="${esc(ru)}"><button class="btn ghost" type="button" data-copy>${ic('copy')}Salin</button></div>
+      <input class="field" id="gid" placeholder="Client ID">
+      <input class="field" id="gsec" type="password" placeholder="Client Secret">
+      <a class="small" style="color:var(--pri)" href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noopener">Buka Google Cloud Console</a>`,
+    ok: 'Simpan',
+    run: async (b) => {
+      await post('/api/config', { id: b.querySelector('#gid').value, secret: b.querySelector('#gsec').value });
+      S.state.configured = true; toast('Tersimpan. Sekarang hubungkan akun Google.');
+    },
+    after: (md) => (md.querySelector('[data-copy]').onclick = (e) => navigator.clipboard.writeText(ru).then(() => (e.currentTarget.lastChild.textContent = 'Tersalin'))),
+  });
+}
+function closeSide() { $('#side').classList.remove('open'); document.querySelector('.scrim.side')?.remove(); }
+$('#menuBtn').onclick = () => {
+  $('#side').classList.add('open');
+  const s = document.createElement('div'); s.className = 'scrim side';
+  s.style.zIndex = 41; s.onclick = closeSide; document.body.appendChild(s); requestAnimationFrame(() => s.classList.add('on'));
+};
+
+// ---------- daftar file ----------
+const cur = () => S.path[S.path.length - 1];
+let seq = 0;
+function skeleton() {
+  $('#empty').classList.add('hidden');
+  $('#files').innerHTML = Array.from({ length: 10 }, () =>
+    S.view === 'grid' ? '<div class="sk" style="aspect-ratio:4/3.9"></div>' : '<div class="sk" style="height:56px;border-radius:0;margin-top:1px"></div>').join('');
+}
+async function load() {
+  const my = ++seq; if (S.sel.size) clearSel();
+  S.next = null; moreObs?.disconnect(); $('#moreSent')?.remove();
+  renderCrumbs(); skeleton(); $('#notes').innerHTML = '';
+  const c = cur();
+  const typeQ = S.type === 'doc' ? 'doc' : S.type;
+  specialBar();
+  const p = new URLSearchParams({ acc: c ? c.acc : S.acc, folder: c ? c.id : (S.special || 'root'), q: S.q, type: typeQ });
+  $('#sfilt').classList.toggle('hidden', !S.q);
+  if (S.q) {
+    if (S.f.content) p.set('content', '1');
+    if (S.f.when) p.set('after', String(Date.now() - Number(S.f.when) * 864e5));
+    if (S.f.owner) p.set('owner', S.f.owner);
+  }
+  try {
+    const d = await api('/api/files?' + p);
+    if (my !== seq) return;
+    S.files = d.files; S.next = d.next || null; S.nextParams = p;
+    $('#notes').innerHTML = d.errors.map((x) => `<div class="notice">${esc(x)}</div>`).join('');
+    if (S.special === 'orphan' && !S.q && d.files.length) {
+      const tot = d.files.reduce((n, f) => n + Number(f.size || 0), 0);
+      $('#notes').insertAdjacentHTML('beforeend', `<div class="notice">${d.files.length} file tanpa folder memakai ${fmt(tot)}. Biasanya berasal dari Google Foto atau dari folder yang sudah dihapus. Lewat menu ⋮ Anda bisa memindahkannya ke folder atau menghapusnya untuk melegakan ruang.</div>`);
+    }
+    render(); watchMore();
+    if (S.found && !S.found.scrolled) { toast('File tidak ditemukan di folder ini'); S.found = null; }
+  } catch (e) {
+    if (my === seq) { $('#files').innerHTML = ''; $('#notes').innerHTML = `<div class="notice">${esc(e.message)}</div>`; }
+  }
+}
+function sorted() {
+  const f = S.q && S.f.size ? S.files.filter((x) => Number(x.size || 0) >= Number(S.f.size) * 1024 * 1024) : [...S.files];
+  const isF = (x) => (x.mimeType === FOLDER ? 0 : 1);
+  const t = (x) => new Date((S.special === 'shared' && !S.path.length && x.sharedWithMeTime) || x.modifiedTime);
+  const sharedRoot = S.special === 'shared' && !S.path.length && !S.q;
+  if (S.sort === 'new') f.sort((a, b) => (sharedRoot ? 0 : isF(a) - isF(b)) || t(b) - t(a));
+  else if (S.sort === 'big') f.sort((a, b) => isF(a) - isF(b) || (b.size || 0) - (a.size || 0));
+  else f.sort((a, b) => isF(a) - isF(b) || a.name.localeCompare(b.name, 'id', { numeric: true }));
+  return f;
+}
+function renderCrumbs() {
+  const SP = { shared: 'Dibagikan ke saya', starred: 'Berbintang', trash: 'Sampah', orphan: 'Tanpa folder' };
+  const root = S.special ? SP[S.special] : S.acc === 'all' ? 'Semua Drive' : (accOf(S.acc).email || 'Drive').split('@')[0];
+  let h = `<button data-i="-1">${esc(root)}</button>`;
+  S.path.forEach((f, i) => (h += `<span class="sep">/</span><button data-i="${i}">${esc(f.name)}</button>`));
+  if (S.q) h += `<span class="sep">/</span><button disabled>Hasil untuk “${esc(S.q)}”</button>`;
+  $('#crumbs').innerHTML = h;
+}
+$('#crumbs').onclick = (e) => {
+  const b = e.target.closest('button[data-i]'); if (!b) return;
+  S.path = S.path.slice(0, Number(b.dataset.i) + 1); clearSearch(false); load();
+};
+let view = [];
+const grouped = () => false;
+const keyOf = (f) => f.acc + ':' + f.id;
+function render() {
+  view = sorted();
+  if (grouped()) {
+    const order = S.accounts.map((a) => a.id);
+    view.sort((x, y) => order.indexOf(x.acc) - order.indexOf(y.acc));
+  }
+  const el = $('#files'); el.className = 'files ' + S.view + (S.sel.size ? ' selecting' : '') + (S.type === 'image' && S.view === 'grid' ? ' gallery' : '');
+  if (!view.length) { el.innerHTML = ''; return showEmpty(); }
+  $('#empty').classList.add('hidden');
+  const folders = view.filter((f) => f.mimeType === FOLDER).length;
+  const small = (id) => ic(id).replace('class="i"', 'class="i" style="width:12px;height:12px"');
+  el.innerHTML = view.map((f, i) => {
+    const a = accOf(f.acc), isF = f.mimeType === FOLDER;
+    const th = f.hasThumb && !isF
+      ? `<img loading="lazy" alt="" src="/api/thumb?acc=${f.acc}&id=${encodeURIComponent(f.id)}" onerror="this.outerHTML=glyph('${esc(f.mimeType)}')">`
+      : glyph(f.mimeType);
+    let label = '';
+    if (grouped()) {
+      if (i === 0 || view[i - 1].acc !== f.acc) {
+        const n = view.filter((x) => x.acc === f.acc).length;
+        label = `<div class="acc-label"><span class="sw" style="background:${a.color}"></span>${esc(a.email)}<span>${n} item</span></div>`;
+      }
+    } else if (S.view === 'grid' && folders) {
+      label = i === 0 ? '<div class="group-label">Folder</div>' : i === folders ? '<div class="group-label">File</div>' : '';
+    }
+    const sharer = f.ownedByMe === false ? (f.sharingUser || f.owners?.[0]) : null;
+    const when = S.special === 'shared' && f.sharedWithMeTime ? dshort(f.sharedWithMeTime) : S.special === 'trash' ? dshort(f.modifiedTime) : dshort(f.createdTime);
+    const whenL = S.special === 'shared' ? 'Dibagikan' : S.special === 'trash' ? 'Dihapus' : 'Dibuat';
+    const sel = S.sel.has(keyOf(f));
+    const dm = f.videoMediaMetadata?.durationMillis;
+    return `${label}<div class="it ${isF ? 'folder' : ''} ${sel ? 'sel' : ''}" data-i="${i}" tabindex="0" title="${esc(f.name)}" draggable="${S.special === 'trash' ? 'false' : 'true'}">
+      <button class="ck" data-ck="${i}" aria-label="Pilih ${esc(f.name)}" aria-pressed="${sel}">${small('check')}</button>
+      <div class="th">${th}${dm ? `<span class="dur">${dur(Number(dm))}</span>` : ''}<span class="tag">${avatar(a, S.view === 'list' ? 14 : 20)}</span></div>
+      <div class="nm">${esc(f.name)}${isF && S.view === 'grid' ? `<small>${whenL} ${when}</small>` : ''}</div>
+      <div class="sz">${S.view === 'list' ? (isF ? 'Folder' : szl(f)) : (isF ? 'Folder · ' + when : (Number(f.size) > 0 ? fmt(f.size) + ' · ' : '') + when)}${sharer ? `<br><span class="own">${small('share')}${esc(sharer.displayName || sharer.emailAddress)}</span>` : ''}</div>
+      ${S.view === 'list' ? `<div class="dt" title="${whenL}">${when}</div>` : ''}
+      ${f.starred && S.special !== 'trash' ? `<span class="star" title="Berbintang">${small('star')}</span>` : ''}
+      <button class="icon-btn more" data-m="${i}" aria-label="Aksi untuk ${esc(f.name)}">${ic('dots')}</button>
+    </div>`;
+  }).join('');
+  selbar();
+  focusItem();
+}
+
+// ---------- muat bertahap saat digulir (Dibagikan ke saya) ----------
+let moreObs = null, moreBusy = false;
+function watchMore() {
+  moreObs?.disconnect(); $('#moreSent')?.remove();
+  if (!S.next) return;
+  const s = document.createElement('div'); s.id = 'moreSent'; s.className = 'more-sent'; s.textContent = 'Memuat item berikutnya…';
+  $('#files').after(s);
+  moreObs = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) loadMore(); }, { rootMargin: '600px' });
+  moreObs.observe(s);
+}
+async function loadMore() {
+  if (moreBusy || !S.next) return;
+  moreBusy = true; const my = seq;
+  try {
+    const p = new URLSearchParams(S.nextParams); p.set('page', S.next);
+    const d = await api('/api/files?' + p);
+    if (my !== seq) return;
+    const have = new Set(S.files.map(keyOf));
+    S.files.push(...d.files.filter((f) => !have.has(keyOf(f))));
+    S.next = d.next || null;
+    render(); watchMore();
+  } catch (e) { toast(e.message); }
+  finally { moreBusy = false; }
+}
+
+// ---------- buka lokasi file (dari beranda) ----------
+async function openLocation(f, dashIdx) {
+  if (!f) return;
+  toast('Mencari lokasi file…');
+  let chain = [], base = 'root';
+  try { const d = await api(`/api/path?acc=${f.acc}&id=${encodeURIComponent(f.id)}`); chain = d.path || []; base = d.base || (d.orphan ? 'orphan' : d.shared ? 'shared' : 'root'); } catch (e) { return toast(e.message); }
+  if (base === 'orphan' || base === 'shared') {
+    // orphan: tidak di folder mana pun (mis. dari Google Foto); shared: di folder milik orang lain
+    if (base === 'orphan') { toast('File ini tidak berada di folder mana pun, ditampilkan di menu Tanpa folder'); seen('orphan'); }
+    else toast('Lokasi: Dibagikan ke saya' + (chain.length ? ' / ' + chain.map((c) => c.name).join(' / ') : ''));
+    S.found = { id: f.id, acc: f.acc, folder: chain.length ? chain[chain.length - 1].id : base, special: base, scrolled: false };
+    S.special = base; S.acc = f.acc; S.path = chain.map((c) => ({ id: c.id, name: c.name, acc: f.acc }));
+    if (S.type) { S.type = ''; renderChips(); }
+    clearSearch(false); return go('files');
+  }
+  S.special = null; S.acc = f.acc; S.path = chain.map((c) => ({ id: c.id, name: c.name, acc: f.acc }));
+  // Sorotan bertahan selama berada di folder ini; filter jenis direset agar file pasti terlihat
+  S.found = { id: f.id, acc: f.acc, folder: chain.length ? chain[chain.length - 1].id : 'root', scrolled: false };
+  toast(chain.length ? 'Lokasi: ' + chain.map((c) => c.name).join(' / ') : 'File ini ada di folder utama Drive Saya');
+  if (S.type) { S.type = ''; renderChips(); }
+  clearSearch(false); go('files');
+}
+function focusItem() {
+  const F = S.found;
+  if (!F) return;
+  const here = cur()?.id || S.special || 'root';
+  if (S.q || (S.special || null) !== (F.special || null) || here !== F.folder || (!cur() && S.acc != F.acc)) { S.found = null; return; }
+  const i = view.findIndex((x) => x.id === F.id && x.acc == F.acc);
+  if (i < 0) return;
+  const el = $(`#files .it[data-i="${i}"]`);
+  if (!el) return;
+  el.classList.add('found');
+  if (!F.scrolled) {
+    F.scrolled = true;
+    el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2400);
+    requestAnimationFrame(() => setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 120));
+  }
+}
+
+// ---------- pilih banyak ----------
+function toggleSel(f) {
+  const k = keyOf(f); S.sel.has(k) ? S.sel.delete(k) : S.sel.add(k);
+  S.selItems.set(k, f); if (!S.sel.has(k)) S.selItems.delete(k);
+  render();
+}
+function clearSel() { S.sel.clear(); S.selItems.clear(); if (S.page === 'files') render(); selbar(); }
+function selbar() {
+  let b = $('#selbar');
+  if (!S.sel.size) { b?.remove(); return; }
+  if (!b) {
+    b = document.createElement('div'); b.id = 'selbar'; b.className = 'selbar';
+    b.innerHTML = `<button class="icon-btn" data-x aria-label="Batalkan pilihan">${ic('x')}</button><b data-n></b>
+      <button class="btn ghost" data-all>Pilih semua</button>
+      <button class="btn ghost" data-dl>${ic('down')}<span>Unduh</span></button>
+      <button class="btn ghost" data-tf>${ic('swap')}<span>Pindah akun</span></button>
+      <button class="btn ghost danger" data-tr>${ic('trash')}<span>Hapus</span></button>`;
+    b.querySelector('[data-x]').onclick = clearSel;
+    b.querySelector('[data-all]').onclick = () => { view.forEach((f) => { S.sel.add(keyOf(f)); S.selItems.set(keyOf(f), f); }); render(); };
+    b.querySelector('[data-dl]').onclick = () => (S.special === 'trash' ? restoreMany : downloadMany)([...S.selItems.values()]);
+    b.querySelector('[data-tf]').onclick = () => { const l = [...S.selItems.values()]; if (new Set(l.map((f) => f.acc)).size > 1) return toast('Pilih item dari satu akun saja'); transferDialog(l); };
+    b.querySelector('[data-tr]').onclick = () => (S.special === 'trash' ? deleteForever : trashMany)([...S.selItems.values()]);
+    document.body.appendChild(b);
+  }
+  b.querySelector('[data-n]').textContent = S.sel.size + ' dipilih';
+  const tr = S.special === 'trash';
+  b.querySelector('[data-dl]').innerHTML = ic(tr ? 'restore' : 'down') + `<span>${tr ? 'Pulihkan' : 'Unduh'}</span>`;
+  b.querySelector('[data-tr]').innerHTML = ic('trash') + `<span>${tr ? 'Hapus selamanya' : 'Hapus'}</span>`;
+  b.querySelector('[data-tf]').classList.toggle('hidden', tr || S.accounts.filter((a) => !a.error).length < 2);
+}
+function trashMany(list) {
+  dialog({
+    title: `Pindahkan ${list.length} item ke sampah?`, desc: 'Item dipindah ke Sampah di akun Google masing-masing dan masih bisa dipulihkan dari Google Drive.',
+    ok: 'Pindahkan ke sampah', danger: true,
+    run: async () => {
+      let ok = 0;
+      const done = [];
+      for (const f of list) { try { await post('/api/trash', { acc: f.acc, id: f.id, name: f.name }); ok++; done.push(f); } catch (e) {} }
+      toast(`${ok} dari ${list.length} item dipindah ke sampah`, ['Urungkan', async () => { for (const f of done) await post('/api/restore', { acc: f.acc, id: f.id, name: f.name }).catch(() => {}); toast('Dipulihkan'); load(); loadAccounts(); }]);
+      clearSel(); load(); loadAccounts();
+    },
+  });
+}
+let zipLib;
+async function getZip() {
+  if (zipLib) return zipLib;
+  await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; sc.onload = res; sc.onerror = () => rej(new Error('Gagal memuat pembuat ZIP')); document.head.appendChild(sc); });
+  return (zipLib = window.JSZip);
+}
+async function collect(f, prefix, out) {
+  if (f.mimeType !== FOLDER) { out.push({ f, path: prefix + f.name }); return; }
+  const d = await api(`/api/files?acc=${f.acc}&folder=${encodeURIComponent(f.id)}`);
+  if (!d.files.length) out.push({ dir: prefix + f.name + '/' });
+  for (const c of d.files) await collect(c, prefix + f.name + '/', out);
+}
+async function downloadMany(list) {
+  if (list.length === 1 && list[0].mimeType !== FOLDER) { location.href = contentUrl(list[0], 1); return clearSel(); }
+  const t = getTray(); t.querySelector('[data-h]').textContent = 'Menyiapkan ZIP';
+  const row = document.createElement('div'); row.className = 'up';
+  row.innerHTML = `<div class="n">Drive Gabungan.zip</div><div class="s">Mendata isi folder…</div><div class="b"><i></i></div>`;
+  t.querySelector('.rows').prepend(row);
+  const st = row.querySelector('.s'), bar = row.querySelector('.b i');
+  try {
+    const JSZip = await getZip();
+    const items = []; for (const f of list) await collect(f, '', items);
+    const files = items.filter((x) => x.f), total = files.reduce((n, x) => n + Number(x.f.size || 0), 0);
+    if (total > 2 * 1024 ** 3) throw new Error('Total lebih dari 2 GB. Pilih lebih sedikit file.');
+    const zip = new JSZip(), used = new Set(); let done = 0, fail = 0;
+    items.filter((x) => x.dir).forEach((x) => zip.folder(x.dir));
+    for (const x of files) {
+      st.textContent = `Mengunduh ${done + 1} dari ${files.length}: ${x.f.name}`;
+      try {
+        const r = await fetch(contentUrl(x.f, 1));
+        if (!r.ok) throw new Error();
+        const cd = r.headers.get('content-disposition') || '';
+        const m = cd.match(/filename\*=UTF-8''([^;]+)/);
+        let name = x.path.replace(/[^/]+$/, '') + (m ? decodeURIComponent(m[1]) : x.f.name);
+        let n = 1, base = name; while (used.has(name)) name = base.replace(/(\.[^./]+)?$/, ` (${n++})$1`);
+        used.add(name); zip.file(name, await r.blob());
+      } catch (e) { fail++; }
+      done++; bar.style.width = (done / files.length) * 90 + '%';
+    }
+    st.textContent = 'Membuat file ZIP…';
+    const blob = await zip.generateAsync({ type: 'blob' }, (m) => (bar.style.width = 90 + m.percent / 10 + '%'));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = (list.length === 1 ? list[0].name : 'Drive Gabungan ' + new Date().toISOString().slice(0, 10)) + '.zip';
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    row.classList.add('ok'); st.textContent = `${done - fail} file dalam ZIP (${fmt(blob.size)})${fail ? `, ${fail} gagal` : ''}`;
+    t.querySelector('[data-h]').textContent = 'Unduhan siap';
+    clearSel();
+  } catch (e) { row.classList.add('bad'); bar.style.width = '100%'; st.textContent = e.message; }
+}
+
+// ---------- bagikan ----------
+const ROLE = { reader: 'Pelihat', commenter: 'Pengomentar', writer: 'Editor', owner: 'Pemilik' };
+function share(f) {
+  const md = dialog({ title: 'Bagikan "' + f.name + '"', desc: 'Dari ' + accOf(f.acc).email, body: '<div class="sk" style="height:160px"></div>', cancel: 'Selesai' });
+  const b = md.querySelector('.body');
+  async function draw() {
+    let d;
+    try { d = await api(`/api/share?acc=${f.acc}&id=${encodeURIComponent(f.id)}`); }
+    catch (e) { b.innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+    const anyone = d.permissions.find((x) => x.type === 'anyone');
+    const people = d.permissions.filter((x) => x.type === 'user' || x.type === 'group');
+    const can = d.capabilities?.canShare !== false;
+    const opt = (sel) => ['reader', 'commenter', 'writer'].map((r) => `<option value="${r}" ${r === sel ? 'selected' : ''}>${ROLE[r]}</option>`).join('');
+    b.innerHTML = `
+      ${can ? '' : '<div class="notice">Kamu tidak punya izin untuk membagikan item ini.</div>'}
+      <div class="sh-sec"><b>Akses link</b>
+        <div class="sh-row"><select class="field sm" data-gen ${can ? '' : 'disabled'}><option value="off">Terbatas: hanya orang yang diundang</option><option value="on" ${anyone ? 'selected' : ''}>Siapa saja yang punya link</option></select>
+        ${anyone ? `<select class="field sm role" data-genrole ${can ? '' : 'disabled'}>${opt(anyone.role)}</select>` : ''}</div>
+        <button type="button" class="btn ghost" data-copy>${ic('link')}Salin link</button></div>
+      ${can ? `<div class="sh-sec"><b>Undang orang</b>
+        <div class="sh-row"><input class="field sm" type="email" placeholder="email@contoh.com" data-email><select class="field sm role" data-role>${opt('reader')}</select></div>
+        <label class="sh-ck"><input type="checkbox" checked data-notify> Kirim email pemberitahuan</label>
+        <button type="button" class="btn pri" data-invite>Undang</button></div>` : ''}
+      <div class="sh-sec"><b>Punya akses</b><div class="sh-list">${people.map((x) => `<div class="sh-p"><div class="av" style="background:${accOf(f.acc).color}">${esc((x.displayName || x.emailAddress || '?')[0].toUpperCase())}</div>
+        <div class="n"><b>${esc(x.displayName || x.emailAddress)}</b><span>${esc(x.emailAddress || '')}</span></div><span class="r">${ROLE[x.role] || x.role}</span>
+        ${x.role !== 'owner' && can ? `<button type="button" class="icon-btn" data-rm="${x.id}" title="Cabut akses">${ic('x')}</button>` : ''}</div>`).join('') || '<p class="small muted">Belum dibagikan ke siapa pun.</p>'}</div></div>`;
+    const busy = (fn) => async (e) => { e.currentTarget.disabled = true; try { await fn(); await draw(); } catch (er) { toast(er.message); await draw(); } };
+    b.querySelector('[data-copy]').onclick = () => navigator.clipboard.writeText(d.webViewLink).then(() => toast(anyone ? 'Link disalin' : 'Link disalin. Hanya orang yang diundang yang bisa membukanya.'));
+    const gen = b.querySelector('[data-gen]');
+    if (gen) gen.onchange = busy(async () => {
+      if (gen.value === 'on') await post('/api/share', { acc: f.acc, id: f.id, type: 'anyone', role: 'reader' });
+      else await api(`/api/share?acc=${f.acc}&id=${encodeURIComponent(f.id)}&perm=anyoneWithLink`, { method: 'DELETE' });
+      toast(gen.value === 'on' ? 'Siapa saja yang punya link bisa membuka' : 'Akses link dimatikan');
+    });
+    const gr = b.querySelector('[data-genrole]');
+    if (gr) gr.onchange = busy(async () => {
+      await api(`/api/share?acc=${f.acc}&id=${encodeURIComponent(f.id)}&perm=anyoneWithLink`, { method: 'DELETE' });
+      await post('/api/share', { acc: f.acc, id: f.id, type: 'anyone', role: gr.value });
+      toast('Akses link: ' + ROLE[gr.value]);
+    });
+    const inv = b.querySelector('[data-invite]');
+    if (inv) inv.onclick = busy(async () => {
+      const email = b.querySelector('[data-email]').value.trim();
+      await post('/api/share', { acc: f.acc, id: f.id, type: 'user', email, role: b.querySelector('[data-role]').value, notify: b.querySelector('[data-notify]').checked });
+      toast(email + ' diundang');
+    });
+    b.querySelectorAll('[data-rm]').forEach((x) => (x.onclick = busy(async () => {
+      await api(`/api/share?acc=${f.acc}&id=${encodeURIComponent(f.id)}&perm=${x.dataset.rm}`, { method: 'DELETE' });
+      toast('Akses dicabut');
+    })));
+  }
+  draw();
+}
+
+function showEmpty() {
+  const e = $('#empty'); e.classList.remove('hidden');
+  if (!S.accounts.length) {
+    e.innerHTML = `<div><div class="art">${ic('cloud')}</div><h3>Hubungkan Drive pertamamu</h3><p>Setiap akun Google yang dihubungkan menambah ruang di pita penyimpanan.</p><button class="btn pri" onclick="$('#addAcc').click()">${ic('plus')}Hubungkan akun Google</button></div>`;
+  } else if (S.special && !S.path.length && !S.q) {
+    const em = esc(accOf(S.acc).email || '');
+    const E = {
+      shared: ['share', 'Belum ada yang dibagikan', `File dan folder yang dibagikan orang lain ke ${em} muncul di sini.`],
+      starred: ['star', 'Belum ada yang berbintang', `Beri bintang lewat menu ⋮ agar file penting di ${em} mudah ditemukan.`],
+      trash: ['trash', 'Sampah kosong', `Item yang dihapus dari ${em} tersimpan di sini sebelum dihapus selamanya.`],
+      orphan: ['fnew', 'Semua file punya folder', `Tidak ada file tanpa folder di ${em}. File dari Google Foto atau yang foldernya sudah dihapus biasanya muncul di sini.`],
+    }[S.special];
+    e.innerHTML = `<div><div class="art">${ic(E[0])}</div><h3>${E[1]}</h3><p>${E[2]}</p></div>`;
+  } else if (S.q) {
+    e.innerHTML = `<div><div class="art">${ic('search')}</div><h3>Tidak ada yang cocok</h3><p>Coba kata lain, atau hapus filter jenis file.</p><button class="btn ghost" onclick="clearSearch()">Hapus pencarian</button></div>`;
+  } else {
+    e.innerHTML = `<div><div class="art">${ic('up')}</div><h3>Folder ini kosong</h3><p>Seret file ke sini atau upload dari perangkatmu.</p><button class="btn pri" onclick="$('#fileIn').click()">${ic('up')}Upload file</button></div>`;
+  }
+}
+$('#files').addEventListener('click', (e) => {
+  const m = e.target.closest('[data-m]');
+  if (m) { e.stopPropagation(); return showMenu(view[m.dataset.m], m); }
+  const ck = e.target.closest('[data-ck]');
+  if (ck) { e.stopPropagation(); return toggleSel(view[ck.dataset.ck]); }
+  const it = e.target.closest('.it'); if (!it) return;
+  if (pressed) { pressed = false; return; }
+  if (S.sel.size || e.ctrlKey || e.metaKey) return toggleSel(view[it.dataset.i]);
+  open(view[it.dataset.i]);
+});
+let pressT, pressed = false;
+$('#files').addEventListener('touchstart', (e) => {
+  const it = e.target.closest('.it'); if (!it || e.target.closest('[data-m],[data-ck]')) return;
+  pressT = setTimeout(() => { pressed = true; navigator.vibrate?.(15); toggleSel(view[it.dataset.i]); }, 480);
+}, { passive: true });
+['touchend', 'touchmove', 'touchcancel'].forEach((ev) => $('#files').addEventListener(ev, () => clearTimeout(pressT), { passive: true }));
+$('#files').addEventListener('contextmenu', (e) => {
+  const it = e.target.closest('.it'); if (!it) return;
+  e.preventDefault(); showMenu(view[it.dataset.i], null, e.clientX, e.clientY);
+});
+$('#files').addEventListener('keydown', (e) => {
+  const it = e.target.closest('.it'); if (!it) return;
+  if (e.key === 'Enter') open(view[it.dataset.i]);
+  if (e.key === 'Delete') trash(view[it.dataset.i]);
+  if (e.key === 'F2') { e.preventDefault(); rename(view[it.dataset.i]); }
+  if (e.key === 'i') details(view[it.dataset.i]);
+  if (e.key === 's') star(view[it.dataset.i]);
+  if (e.key === ' ') { e.preventDefault(); toggleSel(view[it.dataset.i]); }
+});
+function open(f) {
+  if (S.special === 'trash') { const el = document.querySelector(`.it[data-i="${view.indexOf(f)}"] .more`); return showMenu(f, el); }
+  if (f.mimeType === FOLDER) { S.path.push({ id: f.id, name: f.name, acc: f.acc }); clearSearch(false); return load(); }
+  viewer(view.indexOf(f));
+}
+function setView(v) {
+  S.view = v; store('view', v);
+  $('#vGrid').classList.toggle('on', v === 'grid'); $('#vList').classList.toggle('on', v === 'list');
+  render();
+}
+$('#vGrid').onclick = () => setView('grid');
+$('#vList').onclick = () => setView('list');
+$('#sort').onchange = () => { S.sort = $('#sort').value; if (!S.special) store('sort', S.sort); render(); };
+
+// ---------- pencarian (tombol X) ----------
+let qt;
+$('#q').oninput = () => {
+  const has = !!$('#q').value;
+  $('#qx').classList.toggle('hidden', !has); $('#qk').classList.toggle('hidden', has);
+  clearTimeout(qt); qt = setTimeout(() => { S.q = $('#q').value.trim(); if (S.page !== 'files' || S.special === 'trash') { S.special = null; S.acc = 'all'; S.path = []; go('files'); } else load(); }, 350);
+};
+function clearSearch(reload = true) {
+  $('#q').value = ''; $('#qx').classList.add('hidden'); $('#qk').classList.remove('hidden');
+  if (S.q) { S.q = ''; if (reload && S.page === 'files') load(); }
+}
+$('#qx').onclick = () => { clearSearch(); $('#q').focus(); };
+$('#q').onkeydown = (e) => { if (e.key === 'Escape') { clearSearch(); $('#q').blur(); } };
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName) && !document.querySelector('.modal,.viewer')) {
+    e.preventDefault(); $('#q').focus();
+  }
+});
+
+// ---------- viewer ----------
+const contentUrl = (f, dl) => `/api/content?acc=${f.acc}&id=${encodeURIComponent(f.id)}${dl ? '&dl=1' : ''}`;
+function viewer(idx) {
+  const files = view.filter((f) => f.mimeType !== FOLDER);
+  let i = files.indexOf(view[idx]);
+  const v = document.createElement('div'); v.className = 'viewer'; v.setAttribute('role', 'dialog');
+  document.body.appendChild(v);
+  function draw() {
+    const f = files[i], m = f.mimeType, u = contentUrl(f);
+    let inner;
+    if (m.startsWith('image/')) inner = `<img src="${u}" alt="">`;
+    else if (m.startsWith('video/')) inner = `<video src="${u}" controls autoplay playsinline></video>`;
+    else if (m.startsWith('audio/')) inner = `<audio src="${u}" controls autoplay></audio>`;
+    else if ((m === 'application/pdf' || m.startsWith('application/vnd.google-apps.') || m.startsWith('text/')) && !/form|site|map|shortcut/.test(m))
+      inner = `<iframe src="${u}"></iframe>`;
+    else inner = `<div class="nop">${glyph(m)}<p>Pratinjau belum tersedia untuk jenis file ini.</p><a class="btn pri" href="${contentUrl(f, 1)}">${ic('down')}Unduh</a></div>`;
+    v.innerHTML = `<div class="vh"><span class="tag" style="width:10px;height:10px;border-radius:50%;background:${accOf(f.acc).color}"></span>
+      <div class="t">${esc(f.name)}<div class="small" style="color:#9aa4ba;font-weight:500">${esc(accOf(f.acc).email || '')} · ${fmt(f.size)}</div></div>
+      ${f.webViewLink ? `<a class="icon-btn" href="${esc(f.webViewLink)}" target="_blank" rel="noopener" title="Buka di Google Drive">${ic('ext')}</a>` : ''}
+      <a class="icon-btn" href="${contentUrl(f, 1)}" title="Unduh">${ic('down')}</a>
+      <button class="icon-btn" data-x title="Tutup">${ic('x')}</button></div>
+      <div class="vb">${inner}
+        ${files.length > 1 ? `<button class="nav l" data-p aria-label="Sebelumnya">${ic('left')}</button><button class="nav r" data-n aria-label="Berikutnya">${ic('right')}</button>` : ''}</div>`;
+  }
+  const close = () => { v.remove(); document.removeEventListener('keydown', key); };
+  const step = (d) => { i = (i + d + files.length) % files.length; draw(); };
+  function key(e) { if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); }
+  v.onclick = (e) => {
+    if (e.target.closest('[data-x]') || e.target.classList.contains('vb')) close();
+    else if (e.target.closest('[data-p]')) step(-1);
+    else if (e.target.closest('[data-n]')) step(1);
+  };
+  let sx = 0;
+  v.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true });
+  v.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60 && !e.target.closest('iframe,video')) step(dx < 0 ? 1 : -1); });
+  document.addEventListener('keydown', key);
+  draw();
+}
+
+// ---------- menu aksi ----------
+const mobile = () => matchMedia('(max-width:860px)').matches;
+function closeMenu() { document.querySelectorAll('.menu,.scrim.menu-s').forEach((m) => m.remove()); }
+document.addEventListener('click', (e) => { if (!e.target.closest('.menu')) closeMenu(); });
+function popMenu(items, anchor, x, y, head) {
+  closeMenu();
+  const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu');
+  if (head) m.innerHTML = `<div class="hd">${head}</div>`;
+  items.filter(Boolean).forEach(([icon, t, fn, cls, nk]) => {
+    const b = document.createElement('button'); b.setAttribute('role', 'menuitem');
+    if (cls) b.className = cls; b.innerHTML = ic(icon) + esc(t) + (nk ? newTag(nk) : '');
+    b.onclick = (e) => { e.stopPropagation(); closeMenu(); fn(); }; m.appendChild(b);
+  });
+  m.onclick = (e) => e.stopPropagation();
+  if (mobile()) {
+    const s = document.createElement('div'); s.className = 'scrim on menu-s'; s.onclick = closeMenu;
+    document.body.appendChild(s); m.classList.add('sheet'); document.body.appendChild(m);
+  } else {
+    document.body.appendChild(m);
+    const r = anchor ? anchor.getBoundingClientRect() : { left: x, bottom: y, right: x };
+    const left = anchor ? r.right - m.offsetWidth : r.left;
+    m.style.left = Math.max(8, Math.min(left, innerWidth - m.offsetWidth - 8)) + 'px';
+    m.style.top = Math.min(r.bottom + 6, innerHeight - m.offsetHeight - 8) + 'px';
+  }
+  m.querySelector('button')?.focus();
+}
+function showMenu(f, anchor, x, y) {
+  const isF = f.mimeType === FOLDER;
+  const head = `<span class="sw" style="width:10px;height:10px;border-radius:3px;background:${accOf(f.acc).color};flex-shrink:0"></span><span>${esc(f.name)}</span>`;
+  if (S.special === 'trash') return popMenu([
+    ['restore', 'Pulihkan', () => restoreMany([f])],
+    ['trash', 'Hapus selamanya', () => deleteForever([f]), 'danger'],
+  ], anchor, x, y, head);
+  popMenu([
+    [isF ? 'move' : 'eye', isF ? 'Buka' : 'Pratinjau', () => open(f)],
+    ['down', isF ? 'Unduh sebagai ZIP' : 'Unduh', () => (isF ? downloadMany([f]) : (location.href = contentUrl(f, 1)))],
+    f.webViewLink && ['ext', 'Buka di Google Drive', () => window.open(f.webViewLink, '_blank', 'noopener')],
+    ['share', 'Bagikan', () => share(f)],
+    ['star', f.starred ? 'Hapus bintang' : 'Beri bintang', () => star(f)],
+    ['link', 'Buat link berbagi (Fitur Khusus)', () => createLink(f), '', 'links'],
+    isF && ['pin', S.pins.some((x) => x.id === f.id) ? 'Lepas dari sidebar' : 'Sematkan di sidebar', () => { seen('pins'); togglePin(f); }, '', 'pins'],
+    isF && S.accounts.filter((a) => !a.error).length > 1 && ['backup', 'Cadangkan folder ini', () => newBackup(f), '', 'backup'],
+    ['check', 'Pilih', () => toggleSel(f)],
+    ['info', 'Detail', () => { seen('details'); details(f); }, '', 'details'],
+    S.accounts.filter((a) => !a.error).length > 1 && ['swap', 'Pindah/salin ke akun lain', () => { seen('transfer'); transferDialog([f]); }, '', 'transfer'],
+    ['edit', 'Ganti nama', () => rename(f)],
+    ['move', 'Pindahkan', () => move(f)],
+    ['trash', 'Pindahkan ke sampah', () => trash(f), 'danger'],
+  ], anchor, x, y, `<span class="sw" style="width:10px;height:10px;border-radius:3px;background:${accOf(f.acc).color};flex-shrink:0"></span><span>${esc(f.name)}</span>`);
+}
+
+// ---------- dialog ----------
+function dialog({ title, desc, body = '', ok, run, danger, after, cancel }) {
+  const md = document.createElement('div'); md.className = 'modal'; md.setAttribute('role', 'dialog');
+  md.innerHTML = `<div class="scrim on"></div><form class="dialog"><h3>${esc(title)}</h3>${desc ? `<p class="desc">${esc(desc)}</p>` : ''}
+    <div class="body">${body}</div><div class="err" data-err></div>
+    <div class="acts"><button type="button" class="btn ghost" data-c>${esc(cancel || 'Batal')}</button>${ok ? `<button type="submit" class="btn ${danger ? 'pri' : 'pri'}" style="${danger ? 'background:var(--danger)' : ''}" data-ok>${esc(ok)}</button>` : ''}</div></form>`;
+  const close = () => { md.remove(); document.removeEventListener('keydown', key); };
+  const key = (e) => { if (e.key === 'Escape') close(); };
+  md.querySelector('[data-c]').onclick = close;
+  md.querySelector('.scrim').onclick = close;
+  md.querySelector('form').onsubmit = async (e) => {
+    e.preventDefault(); const b = md.querySelector('[data-ok]'); if (!b) return;
+    b.disabled = true; b.classList.add('loading');
+    try { await run(md.querySelector('.body')); close(); } catch (err) { md.querySelector('[data-err]').textContent = err.message; b.disabled = false; b.classList.remove('loading'); }
+  };
+  document.addEventListener('keydown', key);
+  document.body.appendChild(md);
+  after?.(md);
+  setTimeout(() => { const i = md.querySelector('.body input:not([readonly])'); if (i) { i.focus(); i.select?.(); } else md.querySelector('[data-ok]')?.focus(); }, 40);
+  return md;
+}
+function rename(f) {
+  dialog({
+    title: 'Ganti nama', body: `<input class="field" id="nn" value="${esc(f.name)}">`, ok: 'Simpan',
+    run: async (b) => { await post('/api/rename', { acc: f.acc, id: f.id, name: b.querySelector('#nn').value.trim() }); toast('Nama diganti'); load(); },
+    after: (md) => { const i = md.querySelector('#nn'); setTimeout(() => { const d = f.name.lastIndexOf('.'); i.setSelectionRange(0, d > 0 && f.mimeType !== FOLDER ? d : f.name.length); }, 60); },
+  });
+}
+function trash(f) {
+  dialog({
+    title: 'Pindahkan ke sampah?', desc: `"${f.name}" dipindah ke Sampah di ${accOf(f.acc).email}. Masih bisa dipulihkan dari Google Drive.`,
+    ok: 'Pindahkan ke sampah', danger: true,
+    run: async () => {
+      await post('/api/trash', { acc: f.acc, id: f.id, name: f.name });
+      toast(`"${f.name}" dipindahkan ke sampah`, ['Urungkan', async () => { await post('/api/restore', { acc: f.acc, id: f.id, name: f.name }); toast('Dipulihkan'); load(); loadAccounts(); }]);
+      load(); loadAccounts();
+    },
+  });
+}
+function move(f) {
+  const stack = [{ id: 'root', name: 'Drive Saya' }];
+  const md = dialog({
+    title: 'Pindahkan', desc: `Pilih folder tujuan di ${accOf(f.acc).email}.`,
+    body: `<div class="small muted" data-p></div><div class="flist" data-l></div>`, ok: 'Pindahkan ke sini',
+    run: async () => { const to = stack[stack.length - 1]; await post('/api/move', { acc: f.acc, id: f.id, to: to.id }); toast('Dipindahkan ke ' + to.name); load(); },
+  });
+  const b = md.querySelector('.body');
+  async function show() {
+    const c = stack[stack.length - 1];
+    b.querySelector('[data-p]').textContent = stack.map((s) => s.name).join(' / ');
+    const l = b.querySelector('[data-l]'); l.innerHTML = '<div class="sk" style="height:40px"></div>';
+    try {
+      const d = await api(`/api/files?acc=${f.acc}&folder=${encodeURIComponent(c.id)}&type=folder`);
+      const fs = d.files.filter((x) => x.id !== f.id);
+      l.innerHTML = (stack.length > 1 ? `<button type="button" data-up>${ic('left')}Kembali</button>` : '') +
+        (fs.map((x, i) => `<button type="button" data-i="${i}"><svg class="ft" viewBox="0 0 48 48" style="width:22px;height:22px"><use href="#t-folder"/></svg>${esc(x.name)}</button>`).join('') ||
+          '<div class="small muted" style="padding:10px">Tidak ada subfolder</div>');
+      l.onclick = (e) => {
+        if (e.target.closest('[data-up]')) { stack.pop(); return show(); }
+        const it = e.target.closest('[data-i]'); if (!it) return;
+        const x = fs[it.dataset.i]; stack.push({ id: x.id, name: x.name }); show();
+      };
+    } catch (e) { l.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  }
+  show();
+}
+
+// ---------- folder & upload ----------
+function target() {
+  const c = cur();
+  if (c) return { acc: c.acc, folder: c.id };
+  if (S.acc !== 'all') return { acc: S.acc, folder: 'root' };
+  return { acc: 'all', folder: 'root' };
+}
+async function star(f) {
+  try { await post('/api/star', { acc: f.acc, id: f.id, starred: !f.starred }); f.starred = !f.starred; toast(f.starred ? 'Diberi bintang' : 'Bintang dihapus'); S.special === 'starred' ? load() : render(); }
+  catch (e) { toast(e.message); }
+}
+async function restoreMany(list) {
+  let ok = 0; for (const f of list) { try { await post('/api/restore', { acc: f.acc, id: f.id, name: f.name }); ok++; } catch (e) {} }
+  toast(`${ok} item dipulihkan`); clearSel(); load(); loadAccounts();
+}
+function deleteForever(list) {
+  dialog({
+    title: list.length === 1 ? `Hapus "${list[0].name}" selamanya?` : `Hapus ${list.length} item selamanya?`,
+    desc: 'Item akan hilang permanen dari Google Drive dan tidak bisa dipulihkan.', ok: 'Hapus selamanya', danger: true,
+    run: async () => {
+      let ok = 0; for (const f of list) { try { await post('/api/delete-forever', { acc: f.acc, id: f.id, name: f.name }); ok++; } catch (e) {} }
+      toast(`${ok} item dihapus selamanya`); clearSel(); load(); loadAccounts();
+    },
+  });
+}
+
+// ---------- tujuan: pilih akun + folder ----------
+const freeOf = (a) => (a.limit == null ? Infinity : a.limit - a.usage);
+function destDialog({ title, desc, name, nameLabel, size = 0, ok, exclude, extra }) {
+  return new Promise((resolve) => {
+    const accs = S.accounts.filter((a) => !a.error && a.id != exclude);
+    if (!accs.length) { toast('Hubungkan akun Google dulu'); return resolve(null); }
+    const c = cur();
+    const best = [...accs].sort((x, y) => freeOf(y) - freeOf(x))[0];
+    const st = { acc: c && !S.special && c.acc != exclude ? c.acc : S.acc !== 'all' && !S.special && S.acc != exclude ? S.acc : best.id, stack: [{ id: 'root', name: 'Drive Saya' }] };
+    if (c && !S.special) st.stack = [{ id: 'root', name: 'Drive Saya' }, ...S.path.map((p) => ({ id: p.id, name: p.name }))];
+    let done = false;
+    const md = dialog({
+      title, desc,
+      body: `${extra || ''}${name != null ? `<label class="lbl">${esc(nameLabel || 'Nama')}</label><input class="field" data-name value="${esc(name)}">` : ''}
+        <label class="lbl">Simpan di akun</label>
+        <select class="field" data-acc>${accs.map((a) => { const fr = freeOf(a), fit = fr >= size; return `<option value="${a.id}" ${fit ? '' : 'disabled'}>${esc(a.email)} · ${fr === Infinity ? 'tak terbatas' : fmt(fr) + ' kosong'}${a.id === best.id ? ' (paling lega)' : ''}${fit ? '' : ' (tidak cukup)'}</option>`; }).join('')}</select>
+        <label class="lbl">Folder</label>
+        <div class="picker"><div class="pk-path" data-p></div><div class="flist" data-l></div></div>`,
+      ok: ok || 'Simpan',
+      run: async (b) => {
+        const t = st.stack[st.stack.length - 1];
+        const nm = b.querySelector('[data-name]');
+        if (nm && !nm.value.trim()) throw new Error('Nama tidak boleh kosong');
+        if (freeOf(accOf(st.acc)) < size) throw new Error('Ruang di akun ini tidak cukup');
+        done = true;
+        resolve({ acc: st.acc, folder: t.id, folderName: t.name, name: nm ? nm.value.trim() : null, mode: b.querySelector('input[name=mode]:checked')?.value });
+      },
+    });
+    const obs = new MutationObserver(() => { if (!document.body.contains(md)) { obs.disconnect(); if (!done) resolve(null); } });
+    obs.observe(document.body, { childList: true });
+    const b = md.querySelector('.body'), sel = b.querySelector('[data-acc]');
+    sel.value = st.acc;
+    sel.onchange = () => { st.acc = Number(sel.value); st.stack = [{ id: 'root', name: 'Drive Saya' }]; show(); };
+    async function show() {
+      const t = st.stack[st.stack.length - 1];
+      b.querySelector('[data-p]').innerHTML = st.stack.map((x, i) => `<button type="button" data-j="${i}">${esc(x.name)}</button>`).join('<span>/</span>');
+      const l = b.querySelector('[data-l]'); l.innerHTML = '<div class="sk" style="height:38px;margin:4px 6px"></div>';
+      try {
+        const d = await api(`/api/files?acc=${st.acc}&folder=${encodeURIComponent(t.id)}&type=folder`);
+        l.innerHTML = d.files.map((x, i) => `<button type="button" data-i="${i}"><svg class="ft" viewBox="0 0 48 48" style="width:20px;height:20px"><use href="#t-folder"/></svg>${esc(x.name)}<svg class="i" style="margin-left:auto;width:16px;height:16px;color:var(--ink3)"><use href="#i-right"/></svg></button>`).join('') ||
+          '<div class="small muted" style="padding:10px">Tidak ada subfolder. Item akan disimpan di sini.</div>';
+        l.onclick = (e) => { const it = e.target.closest('[data-i]'); if (!it) return; const x = d.files[it.dataset.i]; st.stack.push({ id: x.id, name: x.name }); show(); };
+      } catch (e) { l.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+    }
+    b.querySelector('[data-p]').onclick = (e) => { const j = e.target.closest('[data-j]'); if (!j) return; st.stack = st.stack.slice(0, Number(j.dataset.j) + 1); show(); };
+    show();
+  });
+}
+const NEW = {
+  folder: [FOLDER, 'Folder baru', 'Folder tanpa judul', 'Nama folder'],
+  doc: ['application/vnd.google-apps.document', 'Google Dokumen baru', 'Dokumen tanpa judul', 'Nama dokumen'],
+  sheet: ['application/vnd.google-apps.spreadsheet', 'Google Spreadsheet baru', 'Spreadsheet tanpa judul', 'Nama spreadsheet'],
+  slide: ['application/vnd.google-apps.presentation', 'Google Slide baru', 'Presentasi tanpa judul', 'Nama presentasi'],
+  form: ['application/vnd.google-apps.form', 'Google Formulir baru', 'Formulir tanpa judul', 'Nama formulir'],
+};
+async function createNew(kind) {
+  const [mime, title, def, label] = NEW[kind];
+  const d = await destDialog({ title, name: def, nameLabel: label, ok: kind === 'folder' ? 'Buat folder' : 'Buat dan buka' });
+  if (!d) return;
+  const win = kind !== 'folder' ? window.open('about:blank', '_blank') : null;
+  try {
+    const r = await post('/api/create', { acc: d.acc, parent: d.folder, name: d.name, mimeType: mime });
+    toast(`"${r.file.name}" dibuat di ${d.folderName}`);
+    if (win) win.location = r.file.webViewLink;
+    if (S.page === 'files') load(); else loadDash();
+  } catch (e) { win?.close(); toast(e.message); }
+}
+function newMenu(anchor) {
+  popMenu([
+    ['fnew', 'Folder baru', () => createNew('folder')],
+    ['up', 'Upload file', () => $('#fileIn').click()],
+    ['fup', 'Upload folder', () => $('#dirIn').click()],
+    ['doc', 'Google Dokumen', () => createNew('doc')],
+    ['sheet', 'Google Spreadsheet', () => createNew('sheet')],
+    ['slide', 'Google Slide', () => createNew('slide')],
+    ['form', 'Google Formulir', () => createNew('form')],
+  ], anchor);
+}
+$('#newBtn').onclick = (e) => { e.stopPropagation(); newMenu(e.currentTarget); };
+$('#fab').onclick = (e) => { e.stopPropagation(); newMenu(); };
+$('#dirIn').onchange = () => { uploadFolder([...$('#dirIn').files]); $('#dirIn').value = ''; };
+async function uploadFolder(files) {
+  if (!files.length) return;
+  const total = files.reduce((n, f) => n + f.size, 0);
+  const top = files[0].webkitRelativePath.split('/')[0];
+  const d = await destDialog({ title: `Upload folder "${top}"`, desc: `${files.length} file, ${fmt(total)}. Struktur folder ikut dibuat.`, size: total, ok: 'Upload' });
+  if (!d) return;
+  const t = getTray(); t.querySelector('[data-h]').textContent = 'Menyiapkan folder';
+  const ids = { '': d.folder };
+  const dirs = [...new Set(files.flatMap((f) => { const p = f.webkitRelativePath.split('/').slice(0, -1); return p.map((_, i) => p.slice(0, i + 1).join('/')); }))].sort((a, b) => a.split('/').length - b.split('/').length);
+  try {
+    for (const dir of dirs) {
+      const parent = dir.includes('/') ? dir.slice(0, dir.lastIndexOf('/')) : '';
+      const r = await post('/api/create', { acc: d.acc, parent: ids[parent], name: dir.split('/').pop(), mimeType: FOLDER });
+      ids[dir] = r.file.id;
+    }
+  } catch (e) { return toast('Gagal membuat folder: ' + e.message); }
+  let ok = 0;
+  t.querySelector('[data-h]').textContent = `Mengupload ${files.length} file`;
+  for (const f of files) {
+    const dir = f.webkitRelativePath.split('/').slice(0, -1).join('/');
+    if (await uploadOne(f, t, { acc: d.acc, folder: ids[dir] })) ok++;
+  }
+  t.querySelector('[data-h]').textContent = `${ok} dari ${files.length} file terupload`;
+  toast(`Folder "${top}" terupload ke ${accOf(d.acc).email}`);
+  S.page === 'home' ? loadDash() : load(); loadAccounts();
+}
+$('#fileIn').onchange = () => { uploadAll([...$('#fileIn').files]); $('#fileIn').value = ''; };
+let dragN = 0;
+addEventListener('dragenter', (e) => { if (e.dataTransfer?.types.includes('Files') && !$('#appView').classList.contains('hidden')) { dragN++; $('#drop').classList.add('on'); } });
+addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; $('#drop').classList.remove('on'); } });
+addEventListener('dragover', (e) => e.preventDefault());
+addEventListener('drop', (e) => { e.preventDefault(); dragN = 0; $('#drop').classList.remove('on'); if (e.dataTransfer?.files.length) uploadAll([...e.dataTransfer.files]); });
+
+let tray;
+function getTray() {
+  if (tray && document.body.contains(tray)) return tray;
+  tray = document.createElement('div'); tray.className = 'tray';
+  tray.innerHTML = `<div class="th"><span data-h>Mengupload</span><button class="icon-btn" data-x aria-label="Tutup">${ic('x')}</button></div><div class="rows"></div>`;
+  tray.querySelector('[data-x]').onclick = () => tray.remove();
+  document.body.appendChild(tray); return tray;
+}
+async function uploadAll(files) {
+  if (!files.length) return;
+  if (!S.accounts.length) return toast('Hubungkan akun Google dulu');
+  const total = files.reduce((n, f) => n + f.size, 0);
+  const names = files.length === 1 ? `"${files[0].name}"` : files.length + ' file';
+  const d = await destDialog({ title: 'Upload ' + names, desc: fmt(total) + '. Pilih akun dan folder tujuan.', size: total, ok: 'Upload' });
+  if (d) doUpload(files, { acc: d.acc, folder: d.folder });
+}
+async function doUpload(files, tg) {
+  const t = getTray(); let done = 0;
+  t.querySelector('[data-h]').textContent = `Mengupload ${files.length} file`;
+  for (const f of files) { if (await uploadOne(f, t, tg)) done++; }
+  t.querySelector('[data-h]').textContent = `${done} dari ${files.length} file terupload`;
+  S.page === 'home' ? loadDash() : load(); loadAccounts();
+}
+async function uploadOne(file, t, tg) {
+  const row = document.createElement('div'); row.className = 'up';
+  row.innerHTML = `<div class="n">${esc(file.name)}</div><div class="s">Menyiapkan…</div><div class="b"><i></i></div>`;
+  t.querySelector('.rows').prepend(row);
+  const st = row.querySelector('.s'), bar = row.querySelector('.b i');
+  try {
+    const init = await post('/api/upload/init', { name: file.name, size: file.size, mimeType: file.type || 'application/octet-stream', acc: tg.acc, folder: tg.folder });
+    let start = 0;
+    do {
+      const end = Math.min(start + CHUNK, file.size);
+      let ok = false, err;
+      for (let tr = 0; tr < 3 && !ok; tr++) {
+        try {
+          const r = await fetch(`/api/upload/chunk?id=${init.id}&start=${start}&total=${file.size}`, { method: 'PUT', body: file.slice(start, end) });
+          if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Gagal (' + r.status + ')');
+          ok = true;
+        } catch (e) { err = e; await new Promise((r) => setTimeout(r, 1500)); }
+      }
+      if (!ok) throw err;
+      start = end;
+      const pct = file.size ? (start / file.size) * 100 : 100;
+      bar.style.width = pct + '%';
+      st.textContent = `${pct.toFixed(0)}% ke ${init.email}`;
+    } while (start < file.size);
+    row.classList.add('ok'); st.textContent = 'Tersimpan di ' + init.email;
+    return true;
+  } catch (e) {
+    row.classList.add('bad'); bar.style.width = '100%'; st.textContent = e.message;
+    return false;
+  }
+}
+
+// ---------- menu HP & PWA ----------
+function toggleTheme() { $('#themeBtn').click(); }
+$('#moreBtn').onclick = (e) => {
+  e.stopPropagation();
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  popMenu([
+    ['down', standalone() || installedApp || store('installed') ? 'Sudah terpasang sebagai aplikasi' : 'Pasang sebagai aplikasi', install],
+    ['moon', dark ? 'Mode terang' : 'Mode gelap', toggleTheme],
+    ['link', 'Link berbagi', manageLinks],
+    ['backup', 'Cadangan', manageBackups],
+    ['key', 'Keamanan', () => security()],
+    ['kbd', 'Pintasan keyboard', () => shortcuts()],
+    ['out', 'Keluar', () => $('#logout').click(), 'danger'],
+  ], e.currentTarget);
+};
+let deferred = null;
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// sudah terpasang? (mode aplikasi, pernah dipasang dari perangkat ini, atau terdeteksi browser)
+let installedApp = false;
+const canInstall = () => !standalone() && !installedApp && !store('installed') && (deferred || isIOS());
+if (standalone()) store('installed', 1);
+navigator.getInstalledRelatedApps?.().then((a) => { if (a.length) { installedApp = true; refreshInstallUI(); document.querySelector('.install')?.remove(); } }).catch(() => {});
+function refreshInstallUI() { $('#installSide').classList.toggle('hidden', !canInstall()); }
+async function install() {
+  document.querySelector('.install')?.remove();
+  if (standalone()) return toast('Kamu sedang memakai Drive Gabungan sebagai aplikasi');
+  if ((installedApp || store('installed')) && !deferred) return dialog({
+    title: 'Sudah terpasang', cancel: 'Tutup',
+    desc: 'Drive Gabungan sudah terpasang di perangkat ini. Buka dari ikon di layar utama atau daftar aplikasi. Kalau ikonnya sudah dihapus, pasang ulang lewat menu browser (⋮ → Instal aplikasi / Tambahkan ke layar utama).',
+  });
+  if (deferred) {
+    deferred.prompt();
+    const { outcome } = await deferred.userChoice;
+    deferred = null; refreshInstallUI();
+    if (outcome === 'accepted') toast('Drive Gabungan sedang dipasang');
+    return;
+  }
+  if (!isIOS()) return dialog({
+    title: 'Pasang sebagai aplikasi', cancel: 'Tutup',
+    body: `<div class="ios-steps"><div><b>1</b>Buka menu browser (⋮ di Chrome/Edge, atau ikon pasang di ujung kolom alamat).</div><div><b>2</b>Pilih "Instal aplikasi", "Pasang aplikasi", atau "Tambahkan ke layar utama".</div><div><b>3</b>Konfirmasi. Ikon Drive Gabungan akan muncul di layar utama atau daftar aplikasi.</div></div><p class="small muted" style="margin-top:12px">Firefox di laptop belum mendukung pemasangan aplikasi web. Gunakan Chrome atau Edge.</p>`,
+  });
+  if (isIOS()) dialog({
+    title: 'Pasang di iPhone atau iPad',
+    body: `<div class="ios-steps"><div><b>1</b>Buka halaman ini di Safari.</div><div><b>2</b>Ketuk tombol Bagikan (kotak dengan panah ke atas).</div><div><b>3</b>Pilih "Tambah ke Layar Utama", lalu "Tambah".</div></div>`,
+  });
+}
+function installBanner() {
+  if (!canInstall() || document.querySelector('.install') || $('#appView').classList.contains('hidden')) return;
+  const until = Number(store('install_later') || 0);
+  if (Date.now() < until) return;
+  const b = document.createElement('div'); b.className = 'install'; b.setAttribute('role', 'dialog');
+  b.innerHTML = `<img src="/icon-192.png" alt=""><div class="tx"><b>Pasang Drive Gabungan</b><span>Buka langsung dari layar utama, seperti aplikasi.</span></div>
+    <div class="ac"><button class="btn pri" data-y>Pasang</button><button class="btn ghost" data-n>Nanti</button></div>`;
+  b.querySelector('[data-y]').onclick = install;
+  b.querySelector('[data-n]').onclick = () => { store('install_later', Date.now() + 7 * 864e5); b.remove(); };
+  document.body.appendChild(b);
+}
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; store('installed', ''); installedApp = false; refreshInstallUI(); setTimeout(installBanner, 2500); });
+addEventListener('appinstalled', () => { store('installed', 1); deferred = null; refreshInstallUI(); document.querySelector('.install')?.remove(); toast('Drive Gabungan terpasang'); });
+$('#installSide').onclick = install;
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+
+// ---------- panel detail ----------
+async function details(f) {
+  const d$ = $('#drawer'); d$.classList.remove('hidden');
+  const a = accOf(f.acc);
+  d$.innerHTML = `<div class="dr-h"><b>Detail</b><button class="icon-btn" data-x aria-label="Tutup">${ic('x')}</button></div><div class="dr-b"><div class="sk" style="height:180px"></div></div>`;
+  d$.querySelector('[data-x]').onclick = () => d$.classList.add('hidden');
+  requestAnimationFrame(() => d$.classList.add('on'));
+  let x;
+  try { x = await api(`/api/details?acc=${f.acc}&id=${encodeURIComponent(f.id)}`); }
+  catch (e) { d$.querySelector('.dr-b').innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+  const isF = x.mimeType === FOLDER, im = x.imageMediaMetadata, vm = x.videoMediaMetadata;
+  const row = (k, v) => (v ? `<div class="kv"><span>${k}</span><b>${v}</b></div>` : '');
+  const type = isF ? 'Folder' : (x.mimeType.split('/').pop().replace('vnd.google-apps.', 'Google ').replace('vnd.openxmlformats-officedocument.', '').toUpperCase());
+  const people = x.permissions.filter((p) => p.type !== 'anyone');
+  const anyone = x.permissions.find((p) => p.type === 'anyone');
+  d$.querySelector('.dr-b').innerHTML = `
+    <div class="dr-th">${f.hasThumb && !isF ? `<img src="/api/thumb?acc=${f.acc}&id=${encodeURIComponent(f.id)}" alt="">` : glyph(x.mimeType)}</div>
+    <h3 class="dr-n">${esc(x.name)}</h3>
+    <div class="dr-acc">${avatar(a, 22)}<span>${esc(a.email)}</span></div>
+    <div class="dr-acts">${x.webViewLink ? `<a class="btn ghost" href="${esc(x.webViewLink)}" target="_blank" rel="noopener">${ic('ext')}Buka di Drive</a>` : ''}<button class="btn ghost" data-sh>${ic('share')}Bagikan</button></div>
+    <div class="dr-sec"><h4>Info</h4>
+      ${row('Jenis', esc(type))}${row('Ukuran', isF ? '' : fmt(x.size))}
+      ${row('Lokasi', esc(x.path.join(' / ')))}
+      ${row('Pemilik', esc(x.owners?.[0]?.displayName || x.owners?.[0]?.emailAddress || ''))}
+      ${row('Dibuat', new Date(x.createdTime).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }))}
+      ${row('Diubah', new Date(x.modifiedTime).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + (x.lastModifyingUser ? ' oleh ' + esc(x.lastModifyingUser.displayName) : ''))}
+      ${row('Terakhir dibuka', x.viewedByMeTime ? ago(x.viewedByMeTime) : '')}
+      ${row('Resolusi', im?.width ? `${im.width} × ${im.height}` : vm?.width ? `${vm.width} × ${vm.height}` : '')}
+      ${row('Durasi', vm?.durationMillis ? dur(Number(vm.durationMillis)) : '')}
+      ${row('Kamera', im?.cameraModel ? esc([im.cameraMake, im.cameraModel].filter(Boolean).join(' ')) : '')}
+      ${row('Berbintang', x.starred ? 'Ya' : '')}
+    </div>
+    <div class="dr-sec"><h4>Akses</h4>
+      ${anyone ? `<div class="kv"><span>${ic('link')}</span><b>Siapa saja yang punya link (${ROLE[anyone.role] || anyone.role})</b></div>` : '<p class="small muted">Terbatas: hanya orang yang diundang.</p>'}
+      ${people.map((p) => `<div class="kv"><span>${esc(ROLE[p.role] || p.role)}</span><b>${esc(p.displayName || p.emailAddress || '')}</b></div>`).join('')}
+    </div>
+    ${x.description ? `<div class="dr-sec"><h4>Deskripsi</h4><p class="small">${esc(x.description)}</p></div>` : ''}`;
+  d$.querySelector('[data-sh]').onclick = () => share(f);
+}
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.querySelector('.modal,.viewer')) $('#drawer').classList.add('hidden'); });
+
+// ---------- pindah/salin antar akun ----------
+async function transferDialog(list) {
+  const from = list[0].acc;
+  const others = S.accounts.filter((a) => !a.error && a.id != from);
+  if (!others.length) return toast('Hubungkan akun lain dulu');
+  const total = list.reduce((n, f) => n + Number(f.size || 0), 0);
+  const prevAcc = S.acc, prevSp = S.special, prevPath = S.path;
+  // destDialog memakai lokasi saat ini sebagai bawaan; arahkan ke akun lain yang paling lega
+  S.special = null; S.path = []; S.acc = [...others].sort((x, y) => freeOf(y) - freeOf(x))[0].id;
+  const d = await destDialog({
+    title: list.length === 1 ? `Pindah/salin "${list[0].name}"` : `Pindah/salin ${list.length} item`,
+    desc: `Dari ${accOf(from).email}${total ? ' · ' + fmt(total) : ''}. Pilih akun dan folder tujuan.`,
+    size: total, ok: 'Lanjut', exclude: from,
+    extra: `<label class="lbl">Cara</label><div class="seg2"><label><input type="radio" name="mode" value="move" checked> Pindahkan<small>Hapus dari akun asal (ke sampah)</small></label><label><input type="radio" name="mode" value="copy"> Salin<small>Tetap ada di akun asal</small></label></div>`,
+  });
+  S.acc = prevAcc; S.special = prevSp; S.path = prevPath;
+  if (!d) return;
+  runTransfer(list, d.acc, d.folder, d.mode || 'move', d.folderName);
+}
+async function runTransfer(list, to, folder, mode, folderName) {
+  const t = getTray(); t.querySelector('[data-h]').textContent = mode === 'move' ? 'Memindahkan antar akun' : 'Menyalin antar akun';
+  const row = document.createElement('div'); row.className = 'up';
+  row.innerHTML = `<div class="n">${list.length === 1 ? esc(list[0].name) : list.length + ' item'} → ${esc(accOf(to).email)}</div><div class="s">Menyiapkan…</div><div class="b"><i></i></div>`;
+  t.querySelector('.rows').prepend(row);
+  const st = row.querySelector('.s'), bar = row.querySelector('.b i');
+  // susun daftar file (folder dibuat ulang di tujuan)
+  const jobs = []; let fail = 0, done = 0;
+  async function plan(f, parent) {
+    if (f.mimeType !== FOLDER) { jobs.push({ f, parent }); return; }
+    const r = await post('/api/create', { acc: to, parent, name: f.name, mimeType: FOLDER });
+    const kids = await api(`/api/files?acc=${f.acc}&folder=${encodeURIComponent(f.id)}`);
+    for (const k of kids.files) await plan(k, r.file.id);
+    jobs.push({ folder: f });
+  }
+  try { for (const f of list) await plan(f, folder); } catch (e) { row.classList.add('bad'); st.textContent = e.message; return; }
+  const files = jobs.filter((j) => j.f);
+  for (const j of files) {
+    st.textContent = `${done + 1} dari ${files.length}: ${j.f.name}`;
+    try { await post('/api/transfer', { from: j.f.acc, id: j.f.id, to, folder: j.parent, mode }); }
+    catch (e) { fail++; st.textContent = e.message; await new Promise((r) => setTimeout(r, 1200)); }
+    done++; bar.style.width = (done / files.length) * 100 + '%';
+  }
+  if (mode === 'move' && !fail) for (const j of jobs.filter((x) => x.folder)) await post('/api/trash', { acc: j.folder.acc, id: j.folder.id, name: j.folder.name }).catch(() => {});
+  row.classList.add(fail ? 'bad' : 'ok');
+  st.textContent = `${done - fail} file ${mode === 'move' ? 'dipindah' : 'disalin'} ke ${folderName}${fail ? `, ${fail} gagal` : ''}`;
+  t.querySelector('[data-h]').textContent = 'Selesai';
+  clearSel(); S.page === 'home' ? loadDash() : load(); loadAccounts();
+}
+
+// ---------- seret item ke folder / akun ----------
+let dragItem = null;
+$('#files').addEventListener('dragstart', (e) => {
+  const it = e.target.closest('.it'); if (!it) return;
+  const f = view[it.dataset.i];
+  dragItem = S.sel.size && S.sel.has(keyOf(f)) ? [...S.selItems.values()] : [f];
+  e.dataTransfer.setData('application/x-dg', '1'); e.dataTransfer.effectAllowed = 'move';
+  document.body.classList.add('dragging');
+});
+addEventListener('dragend', () => { dragItem = null; document.body.classList.remove('dragging'); document.querySelectorAll('.drop-on').forEach((x) => x.classList.remove('drop-on')); });
+function dropTarget(e) {
+  if (!dragItem) return null;
+  const fo = e.target.closest('.it.folder');
+  if (fo) { const f = view[fo.dataset.i]; if (f.acc == dragItem[0].acc && !dragItem.includes(f)) return { el: fo, kind: 'folder', f }; }
+  const ac = e.target.closest('.acc[data-id]');
+  if (ac && ac.dataset.id !== 'all' && ac.dataset.id != dragItem[0].acc) return { el: ac, kind: 'acc', id: ac.dataset.id };
+  const cr = e.target.closest('#crumbs button[data-i]');
+  if (cr && S.acc !== 'all' || cr && S.path.length) { const i = Number(cr.dataset.i); const tgt = i < 0 ? { id: 'root', name: 'Drive Saya' } : S.path[i]; if (tgt && tgt.id !== cur()?.id) return { el: cr, kind: 'folder', f: { id: tgt.id, name: tgt.name, acc: dragItem[0].acc } }; }
+  return null;
+}
+addEventListener('dragover', (e) => {
+  const t = dropTarget(e);
+  document.querySelectorAll('.drop-on').forEach((x) => x !== t?.el && x.classList.remove('drop-on'));
+  if (t) { e.preventDefault(); t.el.classList.add('drop-on'); }
+});
+addEventListener('drop', async (e) => {
+  const t = dropTarget(e); if (!t) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  const items = dragItem; dragItem = null;
+  document.querySelectorAll('.drop-on').forEach((x) => x.classList.remove('drop-on'));
+  if (t.kind === 'folder') {
+    let ok = 0; for (const f of items) { try { await post('/api/move', { acc: f.acc, id: f.id, to: t.f.id }); ok++; } catch (er) { toast(er.message); } }
+    toast(`${ok} item dipindah ke ${t.f.name}`); clearSel(); load();
+  } else {
+    S.acc = t.id; const a = accOf(t.id);
+    dialog({
+      title: `Pindahkan ke ${a.email}?`, desc: `${items.length} item akan disalin ke root Drive akun ini lalu dihapus dari akun asal (masuk sampah).`,
+      ok: 'Pindahkan', run: async () => runTransfer(items, a.id, 'root', 'move', 'Drive Saya'),
+    });
+  }
+}, true);
+
+// ---------- saran merapikan & aktivitas ----------
+async function loadInsights(my) {
+  const box = $('#tips'); if (!box) return;
+  let d; try { d = await api('/api/insights'); } catch (e) { box.querySelector('.sub').textContent = e.message; box.querySelector('.sk')?.remove(); return; }
+  if (my !== dashSeq || !document.body.contains(box)) return;
+  const full = S.accounts.filter((a) => !a.error && a.limit && a.usage / a.limit >= 0.9);
+  const waste = d.dupes.reduce((n, g) => n + g.waste, 0), staleSize = d.stale.reduce((n, f) => n + Number(f.size || 0), 0);
+  S.tips = d;
+  const tips = [];
+  full.forEach((a) => tips.push(`<div class="tip-i warn">${ic('bolt')}<div><b>${esc(a.email)} hampir penuh (${Math.round((a.usage / a.limit) * 100)}%)</b><span>Pindahkan file besarnya ke akun yang lebih lega.</span></div><button class="btn ghost" data-full="${a.id}">Lihat file besar</button></div>`));
+  if (d.dupes.length) tips.push(`<div class="tip-i">${ic('dup')}<div><b>${d.dupes.length} file kembar · ${fmt(waste)} bisa dihemat</b><span>File dengan isi sama di satu atau beberapa akun.</span></div><button class="btn ghost" data-dupes>Tinjau</button></div>`);
+  if (d.stale.length) tips.push(`<div class="tip-i">${ic('clock')}<div><b>${d.stale.length} file besar tidak dibuka setahun · ${fmt(staleSize)}</b><span>Kandidat untuk dipindah atau dihapus.</span></div><button class="btn ghost" data-stale>Tinjau</button></div>`);
+  box.innerHTML = `<h3>Saran merapikan ruang</h3><p class="sub">${tips.length ? 'Berdasarkan 400 file terbesar di tiap akun.' : 'Semua rapi. Tidak ada file kembar, akun penuh, atau file besar yang terbengkalai.'}</p><div class="tips">${tips.join('') || `<div class="tip-i ok">${ic('check')}<div><b>Tidak ada yang perlu dirapikan</b><span>Cek lagi nanti setelah menambah banyak file.</span></div></div>`}</div>`;
+}
+function reviewList(title, desc, groups) {
+  // groups: [{label, files}]
+  const all = groups.flatMap((g) => g.files);
+  const md = dialog({
+    title, desc, cancel: 'Tutup', ok: 'Pindahkan yang dicentang ke sampah', danger: true,
+    body: `<div class="rv">${groups.map((g, gi) => `${g.label ? `<div class="rv-g">${g.label}</div>` : ''}${g.files.map((f) => { const i = all.indexOf(f); return `<label class="rv-r"><input type="checkbox" data-k="${i}" ${g.pre?.includes(f) ? 'checked' : ''}>${avatar(accOf(f.acc), 22)}<div class="n"><b>${esc(f.name)}</b><span>${esc(accOf(f.acc).email || '')} · ${fmt(f.size)} · ${dshort(f.modifiedTime)}</span></div><button type="button" class="icon-btn" data-v="${i}" title="Pratinjau">${ic('eye')}</button></label>`; }).join('')}`).join('')}</div>`,
+    run: async (b) => {
+      const pick = [...b.querySelectorAll('input[data-k]:checked')].map((x) => all[x.dataset.k]);
+      if (!pick.length) throw new Error('Belum ada yang dicentang');
+      let ok = 0; for (const f of pick) { try { await post('/api/trash', { acc: f.acc, id: f.id, name: f.name }); ok++; } catch (e) {} }
+      toast(`${ok} file dipindah ke sampah`, ['Urungkan', async () => { for (const f of pick) await post('/api/restore', { acc: f.acc, id: f.id, name: f.name }).catch(() => {}); toast('Dipulihkan'); loadDash(); }]);
+      loadAccounts(); loadDash();
+    },
+  });
+  md.querySelector('.rv').onclick = (e) => { const v = e.target.closest('[data-v]'); if (v) { e.preventDefault(); view = all; viewer(Number(v.dataset.v)); } };
+  if (all.length) md.querySelector('.acts').insertAdjacentHTML('afterbegin', S.accounts.filter((a) => !a.error).length > 1 ? `<button type="button" class="btn ghost" data-mv style="margin-right:auto">${ic('swap')}Pindah akun</button>` : '');
+  md.querySelector('[data-mv]')?.addEventListener('click', () => {
+    const pick = [...md.querySelectorAll('input[data-k]:checked')].map((x) => all[x.dataset.k]);
+    if (!pick.length) return toast('Centang file dulu');
+    if (new Set(pick.map((f) => f.acc)).size > 1) return toast('Pilih file dari satu akun saja untuk dipindah');
+    md.remove(); transferDialog(pick);
+  });
+}
+$('#dash').addEventListener('click', (e) => {
+  const d = S.tips; if (!d) return;
+  if (e.target.closest('[data-dupes]')) reviewList('File kembar', 'Satu salinan tiap kelompok sudah dibiarkan tidak dicentang. Centang yang ingin dibuang.', d.dupes.map((g) => ({ label: `${g.files.length} salinan · ${fmt(g.size)} masing-masing`, files: g.files, pre: g.files.slice(1) })));
+  if (e.target.closest('[data-stale]')) reviewList('File besar yang lama tidak dibuka', 'Tidak dibuka lebih dari setahun. Centang untuk dibuang, atau pindahkan ke akun lain.', [{ files: d.stale }]);
+  const fu = e.target.closest('[data-full]');
+  if (fu) reviewList('File terbesar di ' + accOf(fu.dataset.full).email, 'Centang lalu pindahkan ke akun yang lebih lega.', [{ files: [...d.stale, ...d.dupes.flatMap((g) => g.files)].filter((f, i, arr) => f.acc == fu.dataset.full && arr.findIndex((x) => x.id === f.id) === i).sort((x, y) => y.size - x.size).slice(0, 25) }]);
+}, true);
+const ACT = { upload: ['up', 'Mengupload'], create: ['plus', 'Membuat'], trash: ['trash', 'Membuang'], restore: ['restore', 'Memulihkan'], delete: ['trash', 'Menghapus selamanya'], rename: ['edit', 'Mengganti nama jadi'], share: ['share', 'Membagikan'], transfer: ['swap', 'Memindahkan'], copy: ['dup', 'Menyalin'], empty: ['trash', 'Mengosongkan sampah'], disconnect: ['unlink', 'Memutus akun'], login: ['key', ''], passkey: ['finger', ''], sessions: ['device', ''] };
+async function loadActivity() {
+  const box = $('#actv'); if (!box) return;
+  try {
+    const { items } = await api('/api/activity');
+    box.innerHTML = `<h3>Aktivitas terbaru</h3><p class="sub">Yang dilakukan lewat Drive Gabungan.</p><div class="act-l">${items.slice(0, 12).map((x) => {
+      const [icn, verb] = ACT[x.action] || ['info', x.action]; const a = x.acc_id ? accOf(x.acc_id) : null;
+      return `<div class="act-r"><span class="ai">${ic(icn)}</span><div class="n"><b>${esc(verb ? verb + ' ' : '')}${esc(x.detail)}</b><span>${ago(x.ts)}${a?.email ? ' · ' + esc(a.email) : ''}</span></div></div>`;
+    }).join('') || '<p class="small muted">Belum ada aktivitas.</p>'}</div>`;
+  } catch (e) { box.querySelector('.sub').textContent = e.message; box.querySelector('.sk')?.remove(); }
+}
+
+// ---------- keamanan: password, kunci otomatis, passkey, perangkat ----------
+function uaName(ua) {
+  const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iPhone/iPad' : /Windows/.test(ua) ? 'Windows' : /Mac OS/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'Perangkat';
+  const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : /Firefox\//.test(ua) ? 'Firefox' : '';
+  return [br, os].filter(Boolean).join(' di ');
+}
+function loginRow(x) {
+  return `<div class="sh-p lg-r"><span class="ai ${x.ok ? 'ok' : 'bad'}">${ic(x.ok ? (x.method === 'passkey' ? 'finger' : 'key') : 'x')}</span>
+    <div class="n"><b>${x.ok ? 'Berhasil masuk' : 'Password salah'}${x.method === 'passkey' ? ' (sidik jari/wajah)' : ''}${x.new_device ? ' <span class="pill">Perangkat baru</span>' : ''}</b>
+    <span>${esc(uaName(x.ua || ''))} · ${esc(x.place || x.ip || '')}${x.place && x.ip ? ' · ' + esc(x.ip) : ''} · ${new Date(x.ts).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div></div>`;
+}
+async function loginHistory() {
+  const md = dialog({ title: 'Riwayat masuk', desc: '100 catatan terakhir, termasuk percobaan yang gagal.', cancel: 'Tutup', body: '<div class="sk" style="height:200px"></div>' });
+  md.querySelector('.dialog').classList.add('wide');
+  const b = md.querySelector('.body');
+  try {
+    const { logins } = await api('/api/logins?limit=100');
+    const fail = logins.filter((x) => !x.ok).length;
+    b.innerHTML = `<div class="lg-sum"><span><b>${logins.length - fail}</b> berhasil</span><span class="${fail ? 'bad' : ''}"><b>${fail}</b> gagal</span><span><b>${new Set(logins.filter((x) => x.ok).map((x) => uaName(x.ua || ''))).size}</b> perangkat</span></div>
+      <div class="sh-list" style="max-height:55vh">${logins.map(loginRow).join('') || '<p class="small muted">Belum ada catatan.</p>'}</div>`;
+  } catch (e) { b.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+}
+function security() {
+  const md = dialog({ title: 'Keamanan', cancel: 'Selesai', body: '<div class="sk" style="height:220px"></div>' });
+  md.querySelector('.dialog').classList.add('wide');
+  const b = md.querySelector('.body');
+  async function draw() {
+    const [{ sessions }, { passkeys }, { logins }] = await Promise.all([api('/api/sessions'), api('/api/passkeys'), api('/api/logins?limit=6')]);
+    const lock = store('lock_min') || '0';
+    const here = passkeys.filter((p) => p.host === location.hostname);
+    b.innerHTML = `
+      <div class="sh-sec"><b>${ic('lock')} Kunci otomatis</b><p class="small muted">Minta masuk lagi setelah tidak dipakai. Berlaku di perangkat ini. Tanpa ini, kamu tetap keluar otomatis bila aplikasi tidak dibuka 30 hari.</p>
+        <select class="field sm" data-lock>${[['0', 'Mati'], ['5', 'Setelah 5 menit'], ['15', 'Setelah 15 menit'], ['30', 'Setelah 30 menit'], ['60', 'Setelah 1 jam']].map(([v, l]) => `<option value="${v}" ${v === lock ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="sh-sec"><b>${ic('finger')} Sidik jari / wajah (passkey)</b><p class="small muted">Masuk tanpa mengetik password di ${esc(location.hostname)}.</p>
+        <div class="sh-list">${here.map((p) => `<div class="sh-p"><span class="ai">${ic('finger')}</span><div class="n"><b>${esc(p.name)}</b><span>Ditambahkan ${dshort(p.created)}</span></div><button type="button" class="icon-btn" data-pk="${esc(p.id)}" title="Hapus">${ic('x')}</button></div>`).join('') || '<p class="small muted">Belum ada passkey.</p>'}</div>
+        ${window.PublicKeyCredential ? `<button type="button" class="btn ghost" data-addpk>${ic('plus')}Tambah passkey perangkat ini</button>` : '<p class="small muted">Browser ini belum mendukung passkey.</p>'}</div>
+      <div class="sh-sec"><b>${ic('device')} Perangkat yang sedang masuk</b>
+        <div class="sh-list">${sessions.map((x) => `<div class="sh-p"><span class="ai">${ic(/Android|iPhone/.test(x.ua || '') ? 'phone' : 'device')}</span><div class="n"><b>${esc(uaName(x.ua || ''))}${x.current ? ' · perangkat ini' : ''}</b><span>Aktif ${ago(x.seen || x.created)}${x.ip ? ' · ' + esc(x.ip) : ''}</span></div>${x.current ? '' : `<button type="button" class="btn ghost" data-out="${x.id}">Keluarkan</button>`}</div>`).join('')}</div>
+        ${sessions.length > 1 ? '<button type="button" class="btn ghost danger" data-outall>Keluarkan semua perangkat lain</button>' : ''}</div>
+      <div class="sh-sec"><b>${ic('clock')} Riwayat masuk <span class="newtag">Baru</span></b><p class="small muted">Termasuk percobaan gagal. Kamu diberi tahu bila ada login dari perangkat baru atau banyak password salah.</p>
+        <div class="sh-list">${logins.map(loginRow).join('') || '<p class="small muted">Belum ada catatan.</p>'}</div>
+        <button type="button" class="btn ghost" data-allog>Lihat semua riwayat</button></div>
+      <div class="sh-sec"><b>${ic('cloud')} Pengaturan Google</b><p class="small muted">Client ID, Client Secret, dan Redirect URI dari Google Cloud. Ubah di sini bila akun gagal tersambung karena ID atau Secret salah.</p>
+        <button type="button" class="btn ghost" data-gcfg>Ubah Client ID &amp; Secret</button></div>
+      <div class="sh-sec"><b>${ic('key')} Ganti password</b>
+        <input class="field sm" type="password" data-o placeholder="Password lama"><input class="field sm" type="password" data-n placeholder="Password baru (min. 8)">
+        <button type="button" class="btn ghost" data-pw>Ganti password</button></div>`;
+    b.querySelector('[data-allog]').onclick = loginHistory;
+    b.querySelector('[data-gcfg]').onclick = () => { closeMenu?.(); googleSetup(); };
+    b.querySelector('[data-lock]').onchange = (e) => { store('lock_min', e.target.value); armLock(); toast(e.target.value === '0' ? 'Kunci otomatis dimatikan' : 'Kunci otomatis aktif'); };
+    b.querySelector('[data-addpk]')?.addEventListener('click', () => addPasskey().then(draw));
+    b.querySelectorAll('[data-pk]').forEach((x) => (x.onclick = async () => { await api('/api/passkeys?id=' + encodeURIComponent(x.dataset.pk), { method: 'DELETE' }); toast('Passkey dihapus'); draw(); }));
+    b.querySelectorAll('[data-out]').forEach((x) => (x.onclick = async () => { await api('/api/sessions?id=' + x.dataset.out, { method: 'DELETE' }); toast('Perangkat dikeluarkan'); draw(); }));
+    b.querySelector('[data-outall]')?.addEventListener('click', async () => { await api('/api/sessions?all=1', { method: 'DELETE' }); toast('Semua perangkat lain dikeluarkan'); draw(); });
+    b.querySelector('[data-pw]').onclick = async () => {
+      try { await post('/api/password', { old: b.querySelector('[data-o]').value, password: b.querySelector('[data-n]').value }); toast('Password diganti. Perangkat lain dikeluarkan.'); draw(); }
+      catch (e) { toast(e.message); }
+    };
+  }
+  draw().catch((e) => (b.innerHTML = `<div class="err">${esc(e.message)}</div>`));
+}
+async function addPasskey() {
+  try {
+    const o = await post('/api/passkey/register-options', {});
+    const u8 = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(s.length / 4) * 4, '=')), (c) => c.charCodeAt(0));
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: u8(o.challenge), rp: { id: o.rpId, name: 'Drive Gabungan' },
+      user: { id: u8(o.userId), name: 'pemilik', displayName: 'Pemilik Drive Gabungan' },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { userVerification: 'required', residentKey: 'preferred' },
+      excludeCredentials: o.exclude.map((id) => ({ type: 'public-key', id: u8(id) })), timeout: 60000,
+    } });
+    const r = cred.response, enc64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    if (!r.getPublicKey) throw new Error('Browser ini belum bisa menyimpan passkey. Coba Chrome, Edge, atau Safari terbaru.');
+    await post('/api/passkey/register', { id: enc64(cred.rawId), clientDataJSON: enc64(r.clientDataJSON), publicKey: enc64(r.getPublicKey()), alg: r.getPublicKeyAlgorithm(), name: uaName(navigator.userAgent) });
+    toast('Passkey ditambahkan. Lain kali bisa masuk dengan sidik jari / wajah.');
+  } catch (e) { if (e.name !== 'NotAllowedError') toast(e.message); }
+}
+$('#pkBtn').onclick = async () => {
+  $('#authErr').textContent = '';
+  try {
+    const o = await post('/api/passkey/login-options', {});
+    const u8 = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(s.length / 4) * 4, '=')), (c) => c.charCodeAt(0));
+    const enc64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const cred = await navigator.credentials.get({ publicKey: { challenge: u8(o.challenge), rpId: o.rpId, userVerification: 'required', allowCredentials: o.allow.map((id) => ({ type: 'public-key', id: u8(id) })), timeout: 60000 } });
+    const r = cred.response;
+    await post('/api/passkey/login', { id: enc64(cred.rawId), clientDataJSON: enc64(r.clientDataJSON), authenticatorData: enc64(r.authenticatorData), signature: enc64(r.signature) });
+    startApp();
+  } catch (e) { if (e.name !== 'NotAllowedError') $('#authErr').textContent = e.message; }
+};
+let lockT;
+function armLock() {
+  clearTimeout(lockT);
+  const min = Number(store('lock_min') || 0);
+  if (!min || $('#appView').classList.contains('hidden')) return;
+  lockT = setTimeout(async () => { await post('/api/logout', {}).catch(() => {}); document.querySelectorAll('.modal,.viewer,.menu').forEach((x) => x.remove()); showAuth('locked'); }, min * 60000);
+}
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((ev) => addEventListener(ev, () => { if (lockT) armLock(); }, { passive: true }));
+
+// ---------- pintasan keyboard ----------
+function shortcuts() {
+  const k = [['/', 'Cari'], ['Esc', 'Tutup / hapus pencarian'], ['Enter', 'Buka item'], ['Spasi', 'Pilih item'], ['Ctrl + klik', 'Pilih beberapa'], ['F2', 'Ganti nama'], ['Delete', 'Pindahkan ke sampah'], ['i', 'Detail item'], ['s', 'Beri/hapus bintang'], ['← →', 'File sebelumnya/berikutnya di pratinjau'], ['g lalu h', 'Ke Beranda'], ['g lalu f', 'Ke Semua file'], ['n', 'Menu Baru'], ['?', 'Daftar pintasan ini']];
+  dialog({ title: 'Pintasan keyboard', cancel: 'Tutup', body: `<div class="kbl">${k.map(([a, b]) => `<div><span>${b}</span><span>${a.split(' ').map((x) => (/^(lalu|\+)$/.test(x) ? x : `<kbd>${x}</kbd>`)).join(' ')}</span></div>`).join('')}</div>` });
+}
+let gPrefix = 0;
+addEventListener('keydown', (e) => {
+  if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || document.querySelector('.modal,.viewer') || $('#appView').classList.contains('hidden')) return;
+  if (e.key === '?') { e.preventDefault(); return shortcuts(); }
+  if (e.key === 'n' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); return newMenu(mobile() ? null : $('#newBtn')); }
+  if (e.key === 'g') { gPrefix = Date.now(); return; }
+  if (Date.now() - gPrefix < 900) { if (e.key === 'h') go('home'); if (e.key === 'f') $('#navFiles').click(); gPrefix = 0; }
+});
+
+// ---------- filter pencarian ----------
+function syncFilters() {
+  $('#fContent').classList.toggle('on', S.f.content);
+  $('#fWhen').value = S.f.when; $('#fSize').value = S.f.size; $('#fOwner').value = S.f.owner;
+}
+$('#fContent').onclick = () => { seen('search'); S.f.content = !S.f.content; syncFilters(); load(); };
+$('#fWhen').onchange = () => { S.f.when = $('#fWhen').value; load(); };
+$('#fSize').onchange = () => { S.f.size = $('#fSize').value; render(); };
+$('#fOwner').onchange = () => { S.f.owner = $('#fOwner').value; load(); };
+
+// ---------- sematan sidebar ----------
+async function loadPins() { try { S.pins = (await api('/api/pins')).pins; } catch (e) { S.pins = []; } renderPins(); }
+function renderPins() {
+  $('#pinsBox').classList.toggle('hidden', !S.pins.length);
+  $('#pins').innerHTML = S.pins.map((p, i) => `<div class="acc pin" data-pin="${i}" tabindex="0" role="button"><svg class="ft" viewBox="0 0 48 48" style="width:20px;height:20px"><use href="#t-folder"/></svg><div class="meta"><div class="em">${esc(p.name)}</div><div class="sub">${esc((accOf(p.acc).email || '').split('@')[0])}</div></div><button class="icon-btn rm" data-unpin="${i}" title="Lepas">${ic('x')}</button></div>`).join('');
+}
+async function togglePin(f) {
+  const i = S.pins.findIndex((x) => x.id === f.id);
+  if (i >= 0) S.pins.splice(i, 1); else S.pins.push({ id: f.id, name: f.name, acc: f.acc });
+  renderPins();
+  try { await post('/api/pins', { pins: S.pins }); toast(i >= 0 ? 'Dilepas dari sidebar' : 'Disematkan di sidebar'); } catch (e) { toast(e.message); }
+}
+$('#pins').addEventListener('click', (e) => {
+  const un = e.target.closest('[data-unpin]');
+  if (un) { e.stopPropagation(); return togglePin(S.pins[un.dataset.unpin]); }
+  const it = e.target.closest('[data-pin]'); if (!it) return;
+  const p = S.pins[it.dataset.pin];
+  S.special = null; S.acc = p.acc; S.path = [{ id: p.id, name: p.name, acc: p.acc }]; clearSearch(false); go('files');
+}, true);
+
+// ---------- link berbagi ----------
+function createLink(f) {
+  const md = dialog({
+    title: f.mimeType === FOLDER ? 'Buat link berbagi folder' : 'Buat link berbagi', desc: `"${f.name}" bisa dibuka siapa pun yang punya link, tanpa perlu akun Google.${f.mimeType === FOLDER ? ' Penerima bisa menjelajah isi folder beserta subfoldernya.' : ''}`,
+    body: `<div class="infobox">${ic('info')}<div><b>Ini fitur Drive Gabungan, bukan Google Drive</b>Link dibuat dan diatur oleh aplikasimu sendiri. Izin berbagi di Google Drive tidak berubah, file tetap privat di sana, dan link bisa diubah atau dicabut kapan saja di menu <b>Link berbagi</b>. Untuk berbagi lewat akun Google, pakai menu <b>Bagikan</b>.</div></div>
+      <label class="lbl">Jenis akses</label>
+      <div class="seg2"><label><input type="radio" name="lm" value="download" checked> Bisa diunduh<small>Penerima mendapat file aslinya</small></label>
+        <label><input type="radio" name="lm" value="view"> Hanya lihat<small>Pratinjau di halaman, tanpa tombol unduh</small></label></div>
+      ${f.mimeType === FOLDER ? '<p class="small muted" style="margin:-2px 0 0">Mode unduh: penerima bisa mengunduh per file atau semua isi folder sebagai ZIP.</p>' : ''}
+      <label class="lbl">Berlaku selama</label>
+      <div class="sh-row"><input class="field" type="number" min="1" value="7" data-n style="flex:1"><select class="field" data-u style="width:130px"><option value="1">menit</option><option value="60">jam</option><option value="1440" selected>hari</option><option value="0">tanpa batas</option></select></div>
+      <div class="qk" data-qk>${[[15, 'menit', 1], [1, 'jam', 60], [1, 'hari', 1440], [7, 'hari', 1440]].map(([n, l, u]) => `<button type="button" class="chip" data-q="${n},${u}">${n} ${l}</button>`).join('')}</div>
+      <label class="lbl" data-maxl>${f.mimeType === FOLDER ? 'Batas berapa kali dibuka (opsional)' : 'Batas unduhan (opsional)'}</label><input class="field" type="number" min="1" data-max placeholder="Tanpa batas">
+      <label class="lbl">Password (opsional)</label><input class="field" type="text" data-pw placeholder="Kosongkan jika tanpa password" autocomplete="off">`,
+    ok: 'Buat link',
+    run: async (b) => {
+      const u = Number(b.querySelector('[data-u]').value), n = Number(b.querySelector('[data-n]').value);
+      if (u && !(n > 0)) throw new Error('Isi durasi lebih dari 0');
+      const r = await post('/api/links', { acc: f.acc, id: f.id, minutes: u ? n * u : 0, mode: b.querySelector('input[name=lm]:checked').value, password: b.querySelector('[data-pw]').value.trim(), max: b.querySelector('[data-max]').value });
+      seen('links'); setTimeout(() => showLink(r.url, f.name), 50);
+    },
+  });
+  const b = md.querySelector('.body');
+  b.querySelectorAll('input[name=lm]').forEach((x) => (x.onchange = () => {
+    const v = x.value === 'view';
+    b.querySelector('[data-maxl]').textContent = v || f.mimeType === FOLDER ? 'Batas berapa kali dibuka (opsional)' : 'Batas unduhan (opsional)';
+  }));
+  const u = b.querySelector('[data-u]'), n = b.querySelector('[data-n]');
+  u.onchange = () => { n.disabled = u.value === '0'; };
+  b.querySelector('[data-qk]').onclick = (e) => { const q = e.target.closest('[data-q]'); if (!q) return; const [a1, a2] = q.dataset.q.split(','); n.value = a1; u.value = a2; n.disabled = false; };
+}
+function showLink(link, name) {
+  const md = dialog({
+    title: 'Link siap dibagikan', desc: name, cancel: 'Selesai',
+    body: `<div class="copyrow"><input class="field" readonly value="${esc(link)}"><button type="button" class="btn pri" data-cp>${ic('copy')}Salin</button></div>
+      ${navigator.share ? `<button type="button" class="btn ghost" data-sh>${ic('share')}Kirim lewat aplikasi lain</button>` : ''}`,
+  });
+  md.querySelector('[data-cp]').onclick = (e) => navigator.clipboard.writeText(link).then(() => { e.currentTarget.lastChild.textContent = 'Tersalin'; });
+  md.querySelector('[data-sh]')?.addEventListener('click', () => navigator.share({ title: name, url: link }).catch(() => {}));
+}
+async function manageLinks() {
+  const md = dialog({ title: 'Link berbagi', desc: 'Link buatan Drive Gabungan (bukan link Google Drive). Buat link baru dari menu ⋮ pada file.', cancel: 'Tutup', body: '<div class="sk" style="height:140px"></div>' });
+  md.querySelector('.dialog').classList.add('wide');
+  const b = md.querySelector('.body');
+  async function draw() {
+    const { links } = await api('/api/links');
+    b.innerHTML = links.length ? `<div class="lk-l">${links.map((l, i) => { const a = accOf(l.acc_id); return `<div class="lk ${l.active ? '' : 'off'}">
+      <div class="n"><b>${esc(l.name)}</b><span>${avatar(a, 14, false)} ${esc((a.email || '').split('@')[0])} · ${l.mime === 'application/vnd.google-apps.folder' ? 'Folder · ' : ''}${l.mode === 'view' ? 'Hanya lihat' : 'Unduh'} · ${l.dl}${l.max_dl ? '/' + l.max_dl : ''}x ${l.mode === 'view' || l.mime === 'application/vnd.google-apps.folder' ? 'dibuka' : 'diunduh'} · ${l.active ? (l.expires ? 'sampai ' + new Date(l.expires).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'tanpa batas waktu') : '<b class="hangus">hangus</b>'}${l.locked ? ' · berpassword' : ''}</span></div>
+      ${l.active ? `<button type="button" class="icon-btn" data-c="${i}" title="Salin link">${ic('copy')}</button>` : ''}
+      <button type="button" class="icon-btn" data-e="${i}" title="Edit / perbarui">${ic('edit')}</button>
+      <button type="button" class="icon-btn" data-x="${i}" title="Cabut link">${ic('trash')}</button></div>`; }).join('')}</div>`
+      : `<div class="empty" style="padding:20px 0"><div><div class="art">${ic('link')}</div><h3>Belum ada link</h3><p>Buka menu ⋮ pada file, lalu pilih "Buat link berbagi".</p></div></div>`;
+    b.onclick = (e) => {
+      const c = e.target.closest('[data-c]'), x = e.target.closest('[data-x]'), ed = e.target.closest('[data-e]');
+      if (c) navigator.clipboard.writeText(links[c.dataset.c].url).then(() => toast('Link disalin'));
+      if (x) { const l = links[x.dataset.x]; dialog({ title: 'Cabut link ini?', desc: `Link untuk "${l.name}" langsung tidak bisa dibuka lagi. File di Google Drive tidak terhapus.`, ok: 'Cabut link', danger: true, run: async () => { await api('/api/links?id=' + l.id, { method: 'DELETE' }); toast('Link dicabut'); draw(); } }); }
+      if (ed) editLink(links[ed.dataset.e], draw);
+    };
+  }
+  draw().catch((e) => (b.innerHTML = `<div class="err">${esc(e.message)}</div>`));
+}
+function editLink(l, done) {
+  const view = l.mode === 'view';
+  const md = dialog({
+    title: 'Edit link berbagi', desc: `"${l.name}" · ${l.dl}x ${view ? 'dibuka' : 'diunduh'}${l.active ? '' : ' · saat ini hangus'}`,
+    body: `<label class="lbl">Jenis akses</label>
+      <div class="seg2"><label><input type="radio" name="lm" value="download" ${view ? '' : 'checked'}> Bisa diunduh<small>Penerima mendapat file aslinya</small></label>
+        <label><input type="radio" name="lm" value="view" ${view ? 'checked' : ''}> Hanya lihat<small>Pratinjau, hangus setelah batas dibuka</small></label></div>
+      <label class="lbl">Masa berlaku</label>
+      <select class="field" data-keep><option value="keep">Tetap (${l.expires ? 'sampai ' + new Date(l.expires).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'tanpa batas'})</option><option value="new">Atur ulang mulai sekarang</option></select>
+      <div class="sh-row hidden" data-dur><input class="field" type="number" min="1" value="1" data-n style="flex:1"><select class="field" data-u style="width:130px"><option value="1">menit</option><option value="60">jam</option><option value="1440" selected>hari</option><option value="0">tanpa batas</option></select></div>
+      <label class="lbl" data-maxl>${view ? 'Batas berapa kali dibuka' : 'Batas unduhan'} (kosongkan = tanpa batas)</label><input class="field" type="number" min="1" data-max value="${l.max_dl || ''}">
+      <label class="sh-ck"><input type="checkbox" data-reset ${l.active ? '' : 'checked'}> Mulai ulang hitungan ${view ? 'dibuka' : 'unduhan'} dari 0</label>
+      <label class="lbl">Password</label>
+      <select class="field" data-pwm><option value="keep">${l.locked ? 'Tetap pakai password lama' : 'Tetap tanpa password'}</option><option value="set">${l.locked ? 'Ganti password' : 'Pasang password'}</option>${l.locked ? '<option value="off">Hapus password</option>' : ''}</select>
+      <input class="field hidden" type="text" data-pw placeholder="Password baru" autocomplete="off">
+      <label class="sh-ck"><input type="checkbox" data-regen> Ganti alamat link (link lama langsung tidak berlaku)</label>`,
+    ok: 'Simpan perubahan',
+    run: async (b) => {
+      const p = { id: l.id, mode: b.querySelector('input[name=lm]:checked').value, max: b.querySelector('[data-max]').value || 0 };
+      if (b.querySelector('[data-keep]').value === 'new') { const u = Number(b.querySelector('[data-u]').value), n = Number(b.querySelector('[data-n]').value); if (u && !(n > 0)) throw new Error('Isi durasi lebih dari 0'); p.minutes = u ? n * u : 0; }
+      const pm = b.querySelector('[data-pwm]').value;
+      if (pm === 'off') p.password = null;
+      if (pm === 'set') { p.password = b.querySelector('[data-pw]').value.trim(); if (!p.password) throw new Error('Isi password baru'); }
+      if (b.querySelector('[data-reset]').checked) p.reset = true;
+      if (b.querySelector('[data-regen]').checked) p.regen = true;
+      const ch = [p.regen && 'alamat link diganti (link lama mati)', p.reset && 'hitungan diulang dari 0', p.minutes !== undefined && 'masa berlaku diatur ulang', pm === 'off' && 'password dihapus', pm === 'set' && 'password baru'].filter(Boolean);
+      let yes = false;
+      await new Promise((ok, no) => dialog({
+        title: 'Simpan perubahan link?', desc: ch.length ? 'Perubahan: ' + ch.join(', ') + '.' : 'Pengaturan link akan diperbarui.',
+        ok: 'Ya, simpan', danger: !!p.regen, run: async () => { yes = true; ok(); },
+        after: (m2) => { const ob = new MutationObserver(() => { if (!document.body.contains(m2)) { ob.disconnect(); if (!yes) no(new Error('Perubahan belum disimpan')); } }); ob.observe(document.body, { childList: true }); },
+      }));
+      const r = await api('/api/links', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(p) });
+      toast(p.regen ? 'Link diperbarui dengan alamat baru' : 'Link diperbarui');
+      done?.();
+      if (p.regen) setTimeout(() => showLink(r.url, l.name), 50);
+    },
+  });
+  const b = md.querySelector('.body');
+  b.querySelector('[data-keep]').onchange = (e) => b.querySelector('[data-dur]').classList.toggle('hidden', e.target.value !== 'new');
+  b.querySelector('[data-pwm]').onchange = (e) => b.querySelector('[data-pw]').classList.toggle('hidden', e.target.value !== 'set');
+  b.querySelectorAll('input[name=lm]').forEach((x) => (x.onchange = () => { b.querySelector('[data-maxl]').textContent = (x.value === 'view' ? 'Batas berapa kali dibuka' : 'Batas unduhan') + ' (kosongkan = tanpa batas)'; }));
+}
+$('#navLinks').onclick = () => { seen('links'); closeSide(); manageLinks(); };
+
+// ---------- notifikasi ----------
+// ---------- catatan pembaruan aplikasi (terbaru di atas; tambahkan entri baru setiap rilis) ----------
+const CHANGES = __CHANGES__; // diisi server dari src/changes.json
+const updUnseen = () => {
+  const last = store('seenVer');
+  const i = CHANGES.findIndex((c) => c.v === last);
+  return last ? (i < 0 ? CHANGES.length : i) : 1; // pengguna baru: tampilkan pembaruan terakhir saja
+};
+function bellBadge() {
+  const n = (S.alertsUnseen || 0) + updUnseen();
+  $('#bellN').textContent = n > 9 ? '9+' : n;
+  $('#bellN').classList.toggle('hidden', !n);
+}
+function changesDialog() {
+  dialog({
+    title: 'Pembaruan aplikasi', cancel: 'Tutup',
+    body: `<div class="chg">${CHANGES.map((c) => `<div class="chg-i"><b>${esc(c.title)}</b><small>${dshort(c.date)}</small><ul>${c.items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div>`,
+  });
+}
+async function loadAlerts(check) {
+  try {
+    const d = await api('/api/alerts' + (check ? '?check=1' : ''), { quiet: true });
+    S.alerts = d.alerts; S.alertsUnseen = d.unseen;
+  } catch (e) {}
+  bellBadge();
+}
+async function pushState() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return 'unsupported';
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  return sub ? 'on' : Notification.permission === 'denied' ? 'denied' : 'off';
+}
+async function togglePush() {
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) { await post('/api/push/unsubscribe', { endpoint: sub.endpoint }); await sub.unsubscribe(); toast('Notifikasi di perangkat ini dimatikan'); return; }
+  if (await Notification.requestPermission() !== 'granted') return toast('Izin notifikasi ditolak. Aktifkan lewat pengaturan situs di browser.');
+  const { key } = await api('/api/push/key');
+  const raw = Uint8Array.from(atob(key.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(key.length / 4) * 4, '=')), (c) => c.charCodeAt(0));
+  const s2 = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: raw });
+  await post('/api/push/subscribe', { endpoint: s2.endpoint });
+  await post('/api/push/test', {});
+  toast('Notifikasi aktif. Pesan uji coba dikirim.');
+}
+$('#bellBtn').onclick = async (e) => {
+  e.stopPropagation(); closeMenu(); seen('bell');
+  const btnRect = e.currentTarget.getBoundingClientRect(); // ambil sebelum await: currentTarget jadi null sesudahnya
+  const m = document.createElement('div'); m.className = 'menu bellm'; m.onclick = (ev) => ev.stopPropagation();
+  const st = await pushState().catch(() => 'unsupported');
+  const al = S.alerts || [];
+  const icn = { full: 'bolt', error: 'unlink', backup: 'backup', test: 'bell', login: 'device', fail: 'lock' };
+  const nu = updUnseen(), up = CHANGES.slice(0, Math.max(1, Math.min(nu, 3)));
+  m.innerHTML = `<div class="hd"><span>Notifikasi</span></div>
+    <div class="bl">${up.map((c, k) => `<div class="br upd ${k < nu ? 'new' : ''}"><span class="ai">${ic('bolt')}</span><div class="n"><b>Pembaruan: ${esc(c.title)}</b><span>${c.items.map(esc).join(' · ')}</span><small>${dshort(c.date)}</small></div></div>`).join('')}
+    <button class="allupd" data-allupd>Lihat semua pembaruan</button>${al.map((a) => `<div class="br ${a.seen ? '' : 'new'}"><span class="ai">${ic(icn[a.kind] || 'info')}</span><div class="n"><b>${esc(a.title)}</b><span>${esc(a.body)}</span><small>${ago(a.ts)}</small></div></div>`).join('') || '<p class="small muted" style="padding:10px">Belum ada notifikasi.</p>'}</div>
+    ${st === 'unsupported' ? '<p class="small muted" style="padding:8px 10px">Pasang sebagai aplikasi agar notifikasi bisa muncul di perangkat ini.</p>'
+      : st === 'denied' ? '<p class="small muted" style="padding:8px 10px">Notifikasi diblokir di browser ini.</p>'
+      : `<button data-push>${ic('bell')}${st === 'on' ? 'Matikan notifikasi di perangkat ini' : 'Aktifkan notifikasi di perangkat ini'}</button>`}`;
+  m.querySelector('[data-allupd]').addEventListener('click', () => { closeMenu(); changesDialog(); });
+  m.querySelector('[data-push]')?.addEventListener('click', () => { closeMenu(); togglePush().catch((er) => toast(er.message)); });
+  if (mobile()) { const sc = document.createElement('div'); sc.className = 'scrim on menu-s'; sc.onclick = closeMenu; document.body.appendChild(sc); m.classList.add('sheet'); document.body.appendChild(m); }
+  else { document.body.appendChild(m); const r = btnRect; m.style.left = Math.max(8, r.right - m.offsetWidth) + 'px'; m.style.top = r.bottom + 6 + 'px'; }
+  store('seenVer', CHANGES[0].v); bellBadge();
+  if (al.some((a) => !a.seen)) { post('/api/alerts', {}).then(() => loadAlerts()); }
+};
+
+// ---------- cadangan ----------
+async function newBackup(folder) {
+  let src = folder ? { acc: folder.acc, folder: folder.id, folderName: folder.name } : null;
+  if (!src) {
+    const prev = [S.acc, S.special, S.path]; S.special = null; S.path = [];
+    src = await destDialog({ title: 'Pilih folder yang dicadangkan', desc: 'Pilih akun dan folder sumber. Seluruh isinya akan disalin ke akun lain.', ok: 'Pilih folder ini' });
+    [S.acc, S.special, S.path] = prev;
+    if (!src) return;
+  }
+  const others = S.accounts.filter((a) => !a.error && a.id != src.acc);
+  if (!others.length) return toast('Hubungkan minimal dua akun untuk membuat cadangan');
+  const best = [...others].sort((x, y) => freeOf(y) - freeOf(x))[0];
+  dialog({
+    title: `Cadangkan "${src.folderName}"`, desc: `Dari ${accOf(src.acc).email}. Salinan disimpan di folder "Cadangan - ${src.folderName}" pada akun tujuan.`,
+    body: `<label class="lbl">Simpan cadangan di</label><select class="field" data-dst>${others.map((a) => `<option value="${a.id}" ${a.id === best.id ? 'selected' : ''}>${esc(a.email)} · ${freeOf(a) === Infinity ? 'tak terbatas' : fmt(freeOf(a)) + ' kosong'}</option>`).join('')}</select>
+      <label class="lbl">Cara menjalankan</label>
+      <div class="seg2 three"><label><input type="radio" name="bm" value="auto-weekly" checked> Otomatis mingguan<small>Dicek tiap minggu, hanya file baru/berubah</small></label>
+        <label><input type="radio" name="bm" value="auto-daily"> Otomatis harian<small>Dicek setiap hari</small></label>
+        <label><input type="radio" name="bm" value="manual"> Manual<small>Hanya saat kamu menekan "Cadangkan sekarang"</small></label></div>`,
+    ok: 'Buat cadangan',
+    run: async (b) => {
+      const v = b.querySelector('input[name=bm]:checked').value;
+      const r = await post('/api/backups', { name: src.folderName, src_acc: src.acc, src_folder: src.folder, dst_acc: b.querySelector('[data-dst]').value, mode: v === 'manual' ? 'manual' : 'auto', freq: v === 'auto-daily' ? 'daily' : 'weekly' });
+      toast('Cadangan dibuat. Proses pertama dimulai.');
+      setTimeout(() => { manageBackups(); runBackup(r.id, src.folderName); }, 100);
+    },
+  });
+}
+const running = new Set();
+async function runBackup(id, name) {
+  if (running.has(id)) return; running.add(id);
+  const t = getTray(); t.querySelector('[data-h]').textContent = 'Mencadangkan';
+  const row = document.createElement('div'); row.className = 'up';
+  row.innerHTML = `<div class="n">Cadangan: ${esc(name)}</div><div class="s">Mendata isi folder…</div><div class="b"><i></i></div>`;
+  t.querySelector('.rows').prepend(row);
+  const st = row.querySelector('.s'), bar = row.querySelector('.b i');
+  try {
+    for (let i = 0; i < 2000; i++) {
+      const r = await post('/api/backups/step', { id });
+      if (r.done) { row.classList.add('ok'); bar.style.width = '100%'; st.textContent = r.status; break; }
+      if (r.scanning) st.textContent = 'Mendata isi folder…';
+      else { st.textContent = `Menyalin ${r.total - r.remaining} dari ${r.total} file`; bar.style.width = ((r.total - r.remaining) / r.total) * 100 + '%'; }
+      document.querySelectorAll(`[data-bst="${id}"]`).forEach((x) => (x.textContent = st.textContent));
+    }
+  } catch (e) { row.classList.add('bad'); st.textContent = e.message; }
+  running.delete(id); t.querySelector('[data-h]').textContent = 'Selesai'; loadAccounts();
+}
+async function manageBackups() {
+  const md = dialog({ title: 'Cadangan', desc: 'Salin folder penting ke akun lain, otomatis atau manual. Hanya file baru atau yang berubah yang disalin ulang.', cancel: 'Tutup', body: '<div class="sk" style="height:140px"></div>' });
+  md.querySelector('.dialog').classList.add('wide');
+  const b = md.querySelector('.body');
+  async function draw() {
+    const { backups } = await api('/api/backups');
+    b.innerHTML = `${backups.map((k) => { const s1 = accOf(k.src_acc), d1 = accOf(k.dst_acc); const val = k.mode === 'manual' ? 'manual' : 'auto-' + k.freq; return `<div class="bk">
+      <div class="bk-h">${ic('backup')}<b>${esc(k.name)}</b></div>
+      <div class="bk-r">${avatar(s1, 18, false)}<span>${esc(s1.email || '?')}</span>${ic('right')}${avatar(d1, 18, false)}<span>${esc(d1.email || '?')}</span></div>
+      <div class="small muted" data-bst="${k.id}">${running.has(k.id) ? 'Sedang berjalan…' : esc(k.last_status || 'Belum pernah dijalankan')}${k.last_run ? ' · ' + ago(k.last_run) : ''}</div>
+      <div class="bk-a"><select class="field sm" data-mode="${k.id}">${[['auto-weekly', 'Otomatis mingguan'], ['auto-daily', 'Otomatis harian'], ['manual', 'Manual']].map(([v2, l]) => `<option value="${v2}" ${v2 === val ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <button type="button" class="btn pri" data-run="${k.id}" data-n="${esc(k.name)}">Cadangkan sekarang</button>
+        <a class="btn ghost" href="https://drive.google.com/drive/folders/${encodeURIComponent(k.dst_folder)}" target="_blank" rel="noopener">${ic('ext')}Buka</a>
+        <button type="button" class="icon-btn" data-del="${k.id}" title="Hapus jadwal">${ic('trash')}</button></div></div>`; }).join('')}
+      <button type="button" class="add-acc" data-new>${ic('plus')}Tambah cadangan</button>
+      <p class="small muted">Cadangan otomatis berjalan di server Cloudflare sedikit demi sedikit (tiap 10 menit), jadi tetap jalan walau aplikasi ditutup.</p>`;
+    b.onclick = async (e) => {
+      if (e.target.closest('[data-new]')) { md.remove(); return newBackup(); }
+      const r = e.target.closest('[data-run]'); if (r) return runBackup(Number(r.dataset.run), r.dataset.n);
+      const d = e.target.closest('[data-del]');
+      if (d) { if (!confirm('Hapus jadwal cadangan ini? Salinan yang sudah ada di akun tujuan tidak ikut terhapus.')) return; await api('/api/backups?id=' + d.dataset.del, { method: 'DELETE' }); toast('Jadwal cadangan dihapus'); draw(); }
+    };
+    b.onchange = async (e) => {
+      const s2 = e.target.closest('[data-mode]'); if (!s2) return;
+      const v = s2.value; await api('/api/backups', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: s2.dataset.mode, mode: v === 'manual' ? 'manual' : 'auto', freq: v === 'auto-daily' ? 'daily' : 'weekly' }) });
+      toast('Jadwal cadangan diperbarui');
+    };
+  }
+  draw().catch((e) => (b.innerHTML = `<div class="err">${esc(e.message)}</div>`));
+}
+$('#navBackup').onclick = () => { seen('backup'); closeSide(); manageBackups(); };
+
+// ---------- terima file dari tombol Bagikan di HP ----------
+async function takeShared() {
+  const n = Number(new URLSearchParams(location.search).get('share') || 0);
+  if (!n || !('caches' in window)) return;
+  history.replaceState(null, '', '/');
+  const c = await caches.open('dg-share'); const files = [];
+  for (const k of await c.keys()) {
+    const r = await c.match(k);
+    files.push(new File([await r.blob()], decodeURIComponent(r.headers.get('x-name') || 'file'), { type: r.headers.get('content-type') || '' }));
+    await c.delete(k);
+  }
+  if (files.length) uploadAll(files);
+}
+
+// ---------- mulai ----------
+if (matchMedia('(max-width:860px)').matches) $('#q').placeholder = 'Cari file';
+async function startApp() {
+  $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden'); $('#fab').classList.remove('hidden');
+  S.sort = store('sort') || 'name'; $('#sort').value = S.sort;
+  setView(S.view); renderChips();
+  S.state = await api('/api/state');
+  try { await loadAccounts(); } catch (e) { toast(e.message); }
+  const pg = new URLSearchParams(location.search).get('p');
+  if (pg) history.replaceState(null, '', '/');
+  go(pg === 'files' ? 'files' : 'home');
+  refreshInstallUI(); armLock();
+  document.querySelectorAll('[data-new]').forEach((x) => { if (!isNew(x.dataset.new)) x.remove(); });
+  loadPins(); loadAlerts(true); setInterval(() => loadAlerts(), 5 * 60000); takeShared();
+  if (isIOS()) setTimeout(installBanner, 4000);
+  if (!S.state.configured) googleSetup();
+}
+(async () => {
+  const msg = new URLSearchParams(location.search).get('msg');
+  if (msg) { setTimeout(() => toast(msg), 300); history.replaceState(null, '', '/'); }
+  const err = new URLSearchParams(location.search).get('err');
+  if (err) {
+    history.replaceState(null, '', '/');
+    setTimeout(() => dialog({ title: 'Akun belum tersambung', desc: err, ok: 'Buka panduan', cancel: 'Tutup', run: async () => { window.open('/panduan#gagal', '_blank'); } }), 600);
+  }
+  try {
+    const st = await api('/api/state');
+    if (!st.setup) showAuth('setup'); else if (!st.loggedIn) showAuth(); else startApp();
+  } catch (e) {
+    document.body.innerHTML = `<div class="auth"><div class="auth-card"><h1>Tidak bisa memuat</h1><p class="err">${esc(e.message)}</p></div></div>`;
+  }
+})();
+</script>
+</body>
+</html>

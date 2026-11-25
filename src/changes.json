@@ -1,0 +1,84 @@
+[
+  {
+    "v": "2026.11.13a",
+    "date": "2026-11-13",
+    "title": "Bantuan saat akun gagal tersambung",
+    "items": [
+      "Saat Google menolak koneksi, aplikasi menjelaskan penyebabnya dengan bahasa sederhana beserta cara memperbaikinya",
+      "Panduan punya bagian baru: Kalau akun gagal tersambung"
+    ]
+  },
+  {
+    "v": "2026.11.09a",
+    "date": "2026-11-09",
+    "title": "Angka ruang akun lebih tepat",
+    "items": [
+      "Akun berkapasitas TB yang sudah terisi kini tampil <1%, bukan 0%",
+      "Bar pemakaian tetap terlihat walau isinya sangat kecil dibanding kapasitas",
+      "Bilah navigasi bawah HP pada aplikasi terpasang tidak lagi biru terang",
+      "Isi penyimpanan: warna tetap untuk Drive (biru), Gmail & Foto (oranye), Sampah (merah) sesuai keterangan, plus rincian ukurannya"
+    ]
+  },
+  {
+    "v": "2026.11.06a",
+    "date": "2026-11-06",
+    "title": "Peringatan akun lebih akurat",
+    "items": [
+      "Notifikasi Akses akun terputus hanya muncul bila izin akun benar-benar dicabut atau kedaluwarsa",
+      "Gangguan sesaat dari Google atau jaringan tidak lagi memicu peringatan"
+    ]
+  },
+  {
+    "v": "2026.11.05a",
+    "date": "2026-11-05",
+    "title": "Animasi memuat",
+    "items": [
+      "Garis berjalan di atas layar saat aplikasi sedang memproses",
+      "Tombol di dialog menampilkan putaran saat menyimpan, memindah, atau menghapus",
+      "Pesan jelas bila koneksi internet terputus"
+    ]
+  },
+  {
+    "v": "2026.11.02d",
+    "date": "2026-11-02",
+    "title": "Tampilan laptop lebih rapi",
+    "items": [
+      "Kolom pencarian melebar mengikuti ukuran layar, tombol di kanan sejajar",
+      "Persentase kuota besar (TB) tampil <1%, bukan 0%",
+      "Tampilan daftar (list) di laptop kembali rapi, nama file tidak terdorong ke kanan",
+      "Kartu folder: nama lebih lega, foto akun tidak menutupi tulisan",
+      "Scrollbar ikut tema gelap",
+      "Lonceng notifikasi kembali bisa dibuka di laptop"
+    ]
+  },
+  {
+    "v": "2026.11.02c",
+    "date": "2026-11-02",
+    "title": "Dibagikan ke saya lebih lengkap & cepat",
+    "items": [
+      "Semua item yang dibagikan kini muncul, tidak lagi terbatas 300 item",
+      "Dimuat bertahap saat digulir, jadi tampil lebih cepat",
+      "Urutan bawaan: terbaru dibagikan, seperti Google Drive"
+    ]
+  },
+  {
+    "v": "2026.11.02b",
+    "date": "2026-11-02",
+    "title": "File terbesar per akun",
+    "items": [
+      "Hanya file milik Anda yang memakan kuota, file bagikan tidak ikut",
+      "Pilih akun untuk merinci, lalu kelola: pindah akun atau buang ke sampah"
+    ]
+  },
+  {
+    "v": "2026.11.02a",
+    "date": "2026-11-02",
+    "title": "Buka lokasi file & menu Tanpa folder",
+    "items": [
+      "Tombol folder di Beranda membuka tempat file berada dan menyorotnya",
+      "File di folder bagikan dibuka lewat Dibagikan ke saya",
+      "Menu baru Tanpa folder untuk file yang tidak berada di folder mana pun",
+      "Pilihan akun di Semua Drive, tampilan HP lebih rapi"
+    ]
+  }
+]
